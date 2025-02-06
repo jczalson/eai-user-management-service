@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: eai-user-management-service
+  cloud:
+    config:
+      uri: ${eai-config-server-uri:http://localhost:8888}
+  
+server:
+  port: 9008
+  servlet:
+    contextPath: /eai/api/user-management
