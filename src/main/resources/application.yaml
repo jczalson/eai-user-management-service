@@ -2,9 +2,15 @@ spring:
   application:
     name: eai-user-management-service
   config:
-    import: ${eai-config-server-details:configserver:http://localhost:8888}
-  
+    import: optional:configserver:${eai-config-server-details:http://localhost:8888}
+ 
 server:
   port: 9008
   servlet:
     contextPath: /eai/api/user-management
+#for actuator update		
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, refresh, conditions		
