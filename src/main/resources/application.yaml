@@ -1,6 +1,8 @@
 spring:
   application:
     name: eai-user-management-service
+  profiles:
+    active: local   
   config:
     import: optional:configserver:${eai-config-server-details:http://localhost:8888}
  
