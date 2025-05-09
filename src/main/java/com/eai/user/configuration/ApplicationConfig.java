@@ -16,25 +16,11 @@ public class ApplicationConfig {
 
 	private UI ui;
 	
-	@Getter
-	@Setter
+	
+	  @Getter
+	  @Setter
 	public static class UI {
 		private String apiUrl;
-
-		public String getApiUrl() {
-			return apiUrl;
-		}
-
-		public void setApiUrl(String apiUrl) {
-			this.apiUrl = apiUrl;
-		}
 	}
 
-	public UI getUi() {
-		return ui;
-	}
-
-	public void setUi(UI ui) {
-		this.ui = ui;
-	}
 }
