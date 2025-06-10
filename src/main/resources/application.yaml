@@ -11,7 +11,7 @@ spring:
           google:
             client-id: 888019418247-ljumvo6njfjh8q2lqhm1d875d55lujpd.apps.googleusercontent.com
             client-secret: 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
- 
+    
 server:
   port: 9008
   servlet:

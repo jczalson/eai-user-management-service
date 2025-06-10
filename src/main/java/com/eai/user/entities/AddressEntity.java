@@ -3,6 +3,7 @@ package com.eai.user.entities;
 import java.io.Serializable;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -46,7 +47,7 @@ public class AddressEntity implements Serializable {
 	@Column(name = "ZIP_CD")
 	private Long zipCode;
 	
-	@OneToMany(mappedBy = "addressEntity",fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "addressEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private List<CustomerEntity> listCustomerEntity;
 	
 

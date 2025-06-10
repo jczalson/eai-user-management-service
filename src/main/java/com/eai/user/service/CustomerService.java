@@ -7,4 +7,10 @@ import com.eai.user.dto.CustomerDTO;
 public interface CustomerService {
 
 	public List<CustomerDTO> getAllCustomer();
+
+	public CustomerDTO getCustomerId(long id);
+
+	public List<CustomerDTO> getCustomerByIdAddress(long idAddress);
+
+	public CustomerDTO savCustomerDTO(CustomerDTO customerDTO);
 }

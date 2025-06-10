@@ -1,22 +1,20 @@
 package com.eai.user;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.eai.user.configuration.ApplicationConfig;
-import com.eai.user.entities.AddressEntity;
-import com.eai.user.entities.CustomerEntity;
-import com.eai.user.entities.CustomerType;
-import com.eai.user.repository.AddressRepository;
-import com.eai.user.repository.CustomerRepository;
+import com.eai.user.entities.AppRole;
+import com.eai.user.entities.AppUser;
+import com.eai.user.entities.UserStatusEnum;
+import com.eai.user.service.AccountService;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -24,38 +22,54 @@ import com.eai.user.repository.CustomerRepository;
 public class Application {
 
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 
-	//   @Bean CommandLineRunner CommandLineRunner(CustomerRepository
-	//   customerRepository, AddressRepository addressRepository) {
-	  
-	//   return args ->{ AddressEntity address = new AddressEntity();
-	//   address.setCity("Brussels"); address.setCountry("Belgium");
-	//   address.setStreetName("rue Dome 2"); address.setZipCode(7090L);
-	//   addressRepository.save(address);
-	  
-	//   AddressEntity address1 = new AddressEntity();
-	//   address1.setCity("Brussels"); address1.setCountry("Belgium");
-	//   address1.setStreetName("rue sainte barbe 108"); address1.setZipCode(1400L);
-	//   addressRepository.save(address1);
-	  
-	//   CustomerEntity customerEntity = new CustomerEntity();
-	//   customerEntity.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(ZoneId.of(
-	//   "UTC")))); customerEntity.setCustomerType(CustomerType.CREATED);
-	//   customerEntity.setEmail("zale@gmail.com"); customerEntity.setName("ZZ");
-	//   customerEntity.setAddressEntity(address);
-	//   customerRepository.save(customerEntity);
-	  
-	//   CustomerEntity customerEntity1 = new CustomerEntity();
-	//   customerEntity1.setCreatedDate(Timestamp.valueOf(LocalDateTime.now(ZoneId.of(
-	//   "UTC")))); customerEntity1.setCustomerType(CustomerType.ACTIVE);
-	//   customerEntity1.setEmail("jc@gmail.com"); customerEntity1.setName("JC");
-	//   customerEntity1.setAddressEntity(address1);
-	//   customerRepository.save(customerEntity1);
-	  
-	//   }; }
-	 
-	  
+	// @Bean
+    // PasswordEncoder passwordEncoder(){
+	// 	return new BCryptPasswordEncoder();
+	// }
+
+	@Bean
+	CommandLineRunner CommandLineRunner(@Autowired AccountService accountService) {
+
+		return args -> {
+			// AppRole appRole1 = new AppRole();
+			// appRole1.setRoleName("USER");
+			// accountService.addRole(appRole1);
+
+			// AppRole appRole2 = new AppRole();
+			// appRole2.setRoleName("ADMIN");
+			// accountService.addRole(appRole2);
+
+			// AppUser appUser1 = new AppUser();
+			// appUser1.setEmail("koko@gmail.com");
+			// appUser1.setPassword("1234");
+			// appUser1.setUserStatusEnum(UserStatusEnum.CREATED);
+			// accountService.addUser(appUser1);
+
+			// AppUser appUser2 = new AppUser();
+			// appUser2.setEmail("zale@gmail.com");
+			// appUser2.setPassword("1234");
+			// appUser2.setUserStatusEnum(UserStatusEnum.ACTIVE);
+			// accountService.addUser(appUser2);
+
+			// AppUser appUser3 = new AppUser();
+			// appUser3.setEmail("jc@gmail.com");
+			// appUser3.setPassword("1234");
+			// appUser3.setUserStatusEnum(UserStatusEnum.CREATED);
+			// accountService.addUser(appUser3);
+
+
+
+			// accountService.addRoleToUser(appUser1.getEmail(), "USER");
+			// accountService.addRoleToUser(appUser1.getEmail(), "ADMIN");
+
+			// accountService.addRoleToUser(appUser2.getEmail(), "USER");
+			// accountService.addRoleToUser(appUser3.getEmail(), "ADMIN");
+		};
+	}
+
 }

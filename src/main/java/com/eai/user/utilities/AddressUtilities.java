@@ -7,26 +7,50 @@ import com.eai.user.entities.AddressEntity;
 
 public class AddressUtilities {
 	
-	public static AddressDTO fromAddressEntityToDto(AddressEntity addressEntity) {
+	public static AddressDTO fromAddressEntityToDto(AddressEntity entity) {
 		
 		AddressDTO addressDTO = new AddressDTO();
 		
-		if(addressEntity.getIdAddress() !=null)
-			addressDTO.setAddressId(addressEntity.getIdAddress());
+		if(entity.getIdAddress() !=null)
+			addressDTO.setAddressId(entity.getIdAddress());
 		
-		if(addressEntity.getZipCode() !=null)
-			addressDTO.setZipCode(addressEntity.getZipCode());
+		if(entity.getZipCode() !=null)
+			addressDTO.setZipCode(entity.getZipCode());
 		
-		if(StringUtils.isNotBlank(addressEntity.getCity()))
-			addressDTO.setCity(addressEntity.getCity());
+		if(StringUtils.isNotBlank(entity.getCity()))
+			addressDTO.setCity(entity.getCity());
 		
-		if(StringUtils.isNotBlank(addressEntity.getCountry()))
-			addressDTO.setCountry(addressEntity.getCountry());
+		if(StringUtils.isNotBlank(entity.getCountry()))
+			addressDTO.setCountry(entity.getCountry());
 		
-		if(StringUtils.isNotBlank(addressEntity.getStreetName()))
-			addressDTO.setStreetName(addressEntity.getStreetName());
+		if(StringUtils.isNotBlank(entity.getStreetName()))
+			addressDTO.setStreetName(entity.getStreetName());
 		
 		return addressDTO;
+		
+	}
+
+
+	public static AddressEntity fromAddressDtoToEntity(AddressDTO dto) {
+		
+		AddressEntity entity = new AddressEntity();
+		
+		// if(dto.getIdAddress() !=null)
+		// 	entity.setAddressId(dto.getIdAddress());
+		
+		if(dto.getZipCode() !=null)
+			entity.setZipCode(dto.getZipCode());
+		
+		if(StringUtils.isNotBlank(dto.getCity()))
+			entity.setCity(dto.getCity());
+		
+		if(StringUtils.isNotBlank(dto.getCountry()))
+			entity.setCountry(dto.getCountry());
+		
+		if(StringUtils.isNotBlank(dto.getStreetName()))
+			entity.setStreetName(dto.getStreetName());
+		
+		return entity;
 		
 	}
 

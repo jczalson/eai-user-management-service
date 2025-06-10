@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.eai.user.dto.AddressDTO;
 import com.eai.user.dto.CustomerDTO;
+import com.eai.user.entities.AddressEntity;
 import com.eai.user.entities.CustomerEntity;
 
 public class CustomerUtilities {
@@ -41,5 +42,33 @@ public class CustomerUtilities {
 		return customerDTO;
 		
 	}
+
+
+	public static CustomerEntity fromDtoToCustomerEntity(CustomerDTO dto) {
+		
+		CustomerEntity entity = new CustomerEntity();
+		
+		if(StringUtils.isNotBlank(dto.getName()))
+			entity.setName(dto.getName());
+		
+		if(StringUtils.isNotBlank(dto.getEmail()))
+			entity.setEmail(dto.getEmail());
+		
+		if(StringUtils.isNotBlank(dto.getCustomerType().name()))
+			entity.setCustomerType(dto.getCustomerType());
+		
+		if(dto.getCreatedDate() !=null) {
+			entity.setCreatedDate(Timestamp.valueOf(dto.getCreatedDate()));
+		}
+			
+		if(dto.getAddressDTO() !=null) {
+			AddressEntity addressEntity = AddressUtilities.fromAddressDtoToEntity(dto.getAddressDTO());
+			entity.setAddressEntity(addressEntity);
+		}
+		
+		return entity;
+		
+	}
+
 
 }
