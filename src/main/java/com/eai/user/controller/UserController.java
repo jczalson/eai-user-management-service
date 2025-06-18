@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Authentication;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,6 @@ import com.eai.user.dto.CustomerDTO;
 import com.eai.user.service.CustomerService;
 
 @RestController
-@CrossOrigin(origins="*", allowedHeaders="*" ,allowCredentials = "false")
 public class UserController {
 	private static Logger log =LoggerFactory.getLogger(UserController.class);
 
@@ -40,7 +38,7 @@ public class UserController {
 		return ResponseEntity.ok(all);
 	}
 
-	@GetMapping("/customer/{id}")
+	@GetMapping("/customers/{id}")
 	public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable long id){
 		CustomerDTO customer = customerService.getCustomerId(id);
 		log.info("customer:{}",customer);
@@ -51,7 +49,7 @@ public class UserController {
 	  @GetMapping("/auth") public Authentication getAuth(Authentication
 	  authentication) { return authentication; }
 	 
-	  @PostMapping("/customer/createUser")
+	  @PostMapping("/customers/createUser")
 	  public ResponseEntity<CustomerDTO> createUser(@RequestBody CustomerDTO customerDTO){
       CustomerDTO customerDTO2 = customerService.savCustomerDTO(customerDTO);
 	  log.info("customer:{}",customerDTO2);

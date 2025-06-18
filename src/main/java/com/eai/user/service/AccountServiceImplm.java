@@ -1,5 +1,6 @@
 package com.eai.user.service;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
@@ -11,6 +12,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,9 +50,6 @@ import jakarta.transaction.Transactional;
 public class AccountServiceImplm implements AccountService {
 
     @Autowired
-    private JWTService jwtService;
-
-    @Autowired
     private AppUserRepository appUserRepository;
 
     @Autowired
@@ -61,10 +62,7 @@ public class AccountServiceImplm implements AccountService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtEncoder jwtEncoder;
+    private JWTService jwtService;
 
     @Override
     public void addRoleToUser(String email, String roleName) {
@@ -141,36 +139,9 @@ public class AccountServiceImplm implements AccountService {
     }
 
     @Override
-    public Map<String, String> verify(AppUser user) {
-        Map<String, String> maps = new HashMap<>();
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-       
-            try {
-                 if (authentication.isAuthenticated()) {
-                Instant instant = Instant.now();
-                String roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.joining(" "));
-                JwtClaimsSet claims = JwtClaimsSet.builder()
-                        .issuedAt(instant)
-                        .expiresAt(instant.plus(10, ChronoUnit.MINUTES))
-                        .issuer("http://localhost:9008/eai/api/user-management/")
-                        .subject(user.getEmail())
-                        .claim("scope", roles)
-                        .build();
-                JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters
-                        .from(JwsHeader.with(MacAlgorithm.HS256).build(), claims);
-                String token = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
-                maps.put("accessToken",token);
-                return maps;
-                 }else{
-                  throw new InvalidateRequestException("Error occurred when authenticating user ");
-  
-                 }
-            } catch (Exception ex) {
-                throw new InvalidateRequestException("Error occurred when creating token "+ex.getMessage());
-
-            }
+    public Map<String, String> verify(AppUser user) throws Exception {
+                return jwtService.generateAccessToken(user);
+                
     }
 
 }

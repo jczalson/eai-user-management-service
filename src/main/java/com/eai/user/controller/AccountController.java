@@ -15,6 +15,7 @@ import com.eai.user.dto.UserDTO;
 import com.eai.user.dto.UserRoleInput;
 import com.eai.user.entities.AppRole;
 import com.eai.user.entities.AppUser;
+import com.eai.user.exception.InvalidateRequestException;
 import com.eai.user.service.AccountService;
 
 @RestController
@@ -24,33 +25,38 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping("account/addRole")
-    public AppRole saveRole(@RequestBody AppRole appRole){
-       return accountService.addRole(appRole);
+    public AppRole saveRole(@RequestBody AppRole appRole) {
+        return accountService.addRole(appRole);
     }
 
     @PostMapping("account/register")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public UserDTO saveUser(@RequestBody AppUser user){
-       return accountService.addUser(user);
+    public UserDTO saveUser(@RequestBody AppUser user) {
+        return accountService.addUser(user);
     }
 
     @PostMapping("account/login")
-    public Map<String, String> login(@RequestBody AppUser user){
-       return accountService.verify(user);
+    public Map<String, String> login(@RequestBody AppUser user) {
+        try {
+            return accountService.verify(user);
+        } catch (Exception ex) {
+            throw new InvalidateRequestException(ex.getMessage());
+        }
+
     }
 
     @PostMapping("account/roleToUser")
-    public void addRoleToUser(@RequestBody UserRoleInput userRoleInput){
+    public void addRoleToUser(@RequestBody UserRoleInput userRoleInput) {
         accountService.addRoleToUser(userRoleInput.getUserName(), userRoleInput.getRoleName());
     }
 
     @GetMapping("account/roles/{email}")
-    public Map<String,List<String>> getRolesByUserName(@PathVariable String email){
+    public Map<String, List<String>> getRolesByUserName(@PathVariable String email) {
         return accountService.findRolesByUserName(email);
     }
 
-     @GetMapping("account/users")
-    public List<UserDTO> getUsers(){
+    @GetMapping("account/users")
+    public List<UserDTO> getUsers() {
         List<UserDTO> listOfUsers = accountService.listOfUsers();
         return listOfUsers;
     }

@@ -23,5 +23,5 @@ public interface AccountService {
 
     public  Map<String,List<String>> findRolesByUserName(String userName);
 
-    public Map<String, String> verify(AppUser user);
+    public Map<String, String> verify(AppUser user) throws Exception;
 }
