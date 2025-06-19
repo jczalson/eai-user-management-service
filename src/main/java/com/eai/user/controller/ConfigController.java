@@ -14,21 +14,18 @@ import com.eai.user.configuration.ApplicationConfig;
 @RequestScope
 public class ConfigController {
 
-	
-	@Value("${eai.ui.api-url}")
-	private String apiUrl;
 
 	@Autowired
 	private ApplicationConfig applicationConfig;
 
 	@GetMapping("/url")
-	public Map<String, String> getApiUrl() {
-		return Map.of("API-URL", apiUrl);
+	public Map<String, String[]> getApiUrl() {
+		return Map.of("API-URL", applicationConfig.getAllowedOrigins());
 	}
 	
 	@GetMapping("/url-conf")
-	public String  getApiUrlConfig() {
-		return applicationConfig.getUi().getApiUrl();
+	public String[]  getApiUrlConfig() {
+		return applicationConfig.getAllowedOrigins();
 	}
 
 }

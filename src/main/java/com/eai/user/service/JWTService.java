@@ -42,7 +42,7 @@ public class JWTService {
                         .collect(Collectors.joining(","));
                 JwtClaimsSet claims = JwtClaimsSet.builder()
                         .issuedAt(instant)
-                        .expiresAt(instant.plus(2, ChronoUnit.MINUTES))
+                        .expiresAt(instant.plus(10, ChronoUnit.MINUTES))
                         .issuer("http://localhost:9008/eai/api/user-management/")
                         .subject(user.getEmail())
                         .claim("scope", roles)

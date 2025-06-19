@@ -14,6 +14,7 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "eai")
 public class ApplicationConfig {
 
+	private String [] allowedOrigins;
 	private UI ui;
 	
 	
