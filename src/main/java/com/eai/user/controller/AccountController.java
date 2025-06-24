@@ -1,23 +1,31 @@
 package com.eai.user.controller;
 
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.eai.user.dto.UserDTO;
+import com.eai.user.dto.UserDTOInput;
 import com.eai.user.dto.UserRoleInput;
 import com.eai.user.entities.AppRole;
 import com.eai.user.entities.AppUser;
+import com.eai.user.entities.UserStatusEnum;
 import com.eai.user.exception.InvalidateRequestException;
 import com.eai.user.service.AccountService;
-
 @RestController
 public class AccountController {
 
@@ -29,10 +37,14 @@ public class AccountController {
         return accountService.addRole(appRole);
     }
 
-    @PostMapping("account/register")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public UserDTO saveUser(@RequestBody AppUser user) {
-        return accountService.addUser(user);
+    @PostMapping(path="account/register",consumes =MediaType.MULTIPART_FORM_DATA_VALUE )
+    // @PreAuthorize("hasAuthority('ADMIN')")
+    public UserDTO saveUser(@RequestParam MultipartFile file, String email, String password,UserStatusEnum status) throws Exception {
+       UserDTOInput userInput = new UserDTOInput();
+       userInput.setEmail(email);
+       userInput.setPassword(password);
+       userInput.setStatusEnum(status);
+        return accountService.addUser(file,userInput);
     }
 
     @PostMapping("account/login")
@@ -53,6 +65,17 @@ public class AccountController {
     @GetMapping("account/roles/{email}")
     public Map<String, List<String>> getRolesByUserName(@PathVariable String email) {
         return accountService.findRolesByUserName(email);
+    }
+
+
+     @GetMapping(path = "account/photo/{email}",produces=MediaType.IMAGE_JPEG_VALUE)
+    public byte[] getUserPhoto(@PathVariable String email) throws Exception {
+       UserDTO user = accountService.loadUserByUsername(email);
+       if(StringUtils.isNotBlank(user.getPhoto())){
+           return Files.readAllBytes(Path.of(URI.create(user.getPhoto())));
+       }
+       
+        return null;
     }
 
     @GetMapping("account/users")

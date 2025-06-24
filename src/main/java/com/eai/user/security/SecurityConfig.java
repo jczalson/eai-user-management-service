@@ -50,7 +50,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
-                .requestMatchers( "/account/login", "/actuator/**")
+                .requestMatchers( "/account/register",
+                   "/account/login","/v3/api-docs/**",
+                   "/swagger-ui/**", 
+                    "/swagger-ui.html", "/actuator/**")
                 .permitAll()
                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(op -> op.disable()))

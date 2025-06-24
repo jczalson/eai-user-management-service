@@ -1,7 +1,14 @@
 package com.eai.user.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
@@ -30,9 +37,11 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.eai.user.dto.RoleDTO;
 import com.eai.user.dto.UserDTO;
+import com.eai.user.dto.UserDTOInput;
 import com.eai.user.entities.AppRole;
 import com.eai.user.entities.AppUser;
 import com.eai.user.entities.AppUserRole;
@@ -113,10 +122,19 @@ public class AccountServiceImplm implements AccountService {
     }
 
     @Override
-    public UserDTO addUser(AppUser appUser) {
-        String pwd = appUser.getPassword();
-        appUser.setPassword(passwordEncoder.encode(pwd));
-        UserDTO dto = AccountUtilities.fromUserEntityToDto(appUserRepository.save(appUser));
+    public UserDTO addUser(MultipartFile file, UserDTOInput userInput) throws IOException {
+        String pwd = userInput.getPassword();
+        userInput.setPassword(passwordEncoder.encode(pwd));
+        Path folderPath = Paths.get(System.getProperty("user.home"), "zale-data","pictures");
+        if(!Files.exists(folderPath)){
+           Files.createDirectories(folderPath);
+        }
+        // String fileName = UUID.randomUUID().toString();
+        Path filePath = Paths.get(System.getProperty("user.home"), "zale-data","pictures"
+        ,LocalDate.now()+"_"+System.currentTimeMillis()+"_"+userInput.getEmail().split("@")[0]+".jpg");
+        Files.copy(file.getInputStream(), filePath);
+        userInput.setPhoto(filePath.toUri().toString());
+        UserDTO dto = AccountUtilities.fromUserEntityToDto(appUserRepository.save(AccountUtilities.fromUserDtoInputToEntity(userInput)));
         return dto;
     }
 

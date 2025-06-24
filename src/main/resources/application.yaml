@@ -3,7 +3,8 @@ spring:
     name: eai-user-management-service  
   config:
     import: optional:configserver:${eai-config-server-details:http://localhost:8888}
-
+  jmx:
+    enabled: true
   security:
     oauth2:
       client:
@@ -11,7 +12,11 @@ spring:
           google:
             client-id: 888019418247-ljumvo6njfjh8q2lqhm1d875d55lujpd.apps.googleusercontent.com
             client-secret: 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
-    
+
+  devtools:
+    livereload:
+      enabled: true  
+
 server:
   port: 9008
   servlet:
@@ -21,4 +26,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, refresh, conditions		
+        include: health, refresh, conditions
+    jmx:
+      exposure:
+        include: health, refresh, info     		

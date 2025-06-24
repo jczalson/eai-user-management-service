@@ -31,12 +31,15 @@ public class AppUser implements Serializable {
     @Column(name = "ID_USER")
     private long idUser;
 
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL",unique = true)
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "PWD")
     private String password;
+    
+    @Column(name="PHOTO")
+    private String photo;
 
     // @Enumerated(EnumType.STRING)
     @Column(name = "status")

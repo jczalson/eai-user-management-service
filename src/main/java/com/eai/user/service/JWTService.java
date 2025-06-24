@@ -11,7 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -29,7 +29,7 @@ public class JWTService {
     private JwtEncoder jwtAccessTokenEncoder;
     @Autowired
     private AuthenticationManager authenticationManager;
-
+    
     public Map<String, String> generateAccessToken(AppUser user) {
          Map<String, String> maps = new HashMap<>();
         try {
@@ -42,7 +42,7 @@ public class JWTService {
                         .collect(Collectors.joining(","));
                 JwtClaimsSet claims = JwtClaimsSet.builder()
                         .issuedAt(instant)
-                        .expiresAt(instant.plus(10, ChronoUnit.MINUTES))
+                        .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
                         .issuer("http://localhost:9008/eai/api/user-management/")
                         .subject(user.getEmail())
                         .claim("scope", roles)
@@ -50,6 +50,8 @@ public class JWTService {
                 JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters
                         .from(JwsHeader.with(MacAlgorithm.HS256).build(), claims);
                 String token = jwtAccessTokenEncoder.encode(jwtEncoderParameters).getTokenValue();
+              
+            SecurityContextHolder.getContext().setAuthentication(authentication);
                 maps.put("access-token", token);
             }
         } catch (Exception ex) {
