@@ -6,16 +6,16 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eai.user.dto.LoginDTO;
 import com.eai.user.dto.UserDTO;
 import com.eai.user.dto.UserDTOInput;
 import com.eai.user.entities.AppRole;
-import com.eai.user.entities.AppUser;
 
 public interface AccountService {
 
     public void addRoleToUser(String email, String roleName);
 
-    public UserDTO loadUserByUsername(String email);
+    public UserDTO loadUserByUsername(String email) throws Exception;
 
     public List<UserDTO> listOfUsers();
 
@@ -25,7 +25,7 @@ public interface AccountService {
 
     public List<AppRole> listOfAllRoles();
 
-    public  Map<String,List<String>> findRolesByUserName(String userName);
+    public Map<String, List<String>> findRolesByUserName(String userName);
 
-    public Map<String, String> verify(AppUser user) throws Exception;
+    public Map<String, String> verify(LoginDTO user) throws Exception;
 }

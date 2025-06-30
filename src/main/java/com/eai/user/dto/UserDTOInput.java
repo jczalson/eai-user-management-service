@@ -23,6 +23,8 @@ public class UserDTOInput implements Serializable {
 
     private String password;
 
+    private String name;
+
     private UserStatusEnum statusEnum;
 
 }

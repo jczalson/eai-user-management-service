@@ -8,14 +8,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.eai.user.dto.AddressDTO;
 import com.eai.user.dto.CustomerDTO;
-import com.eai.user.entities.AddressEntity;
 import com.eai.user.entities.CustomerEntity;
 import com.eai.user.exception.InvalidateRequestException;
 import com.eai.user.repository.AddressRepository;
 import com.eai.user.repository.CustomerRepository;
-import com.eai.user.utilities.AddressUtilities;
 import com.eai.user.utilities.CustomerUtilities;
 
 @Service

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eai.user.entities.UserStatusEnum;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,9 +24,16 @@ public class UserDTO implements Serializable {
 
     private String userName;
 
+    private String name;
+
     private String photo;
 
-    @JsonProperty( access = JsonProperty.Access.WRITE_ONLY)
+    // @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    //  @JsonIgnore
+    private byte[] userPhoto;
+
+    // @JsonProperty( access = JsonProperty.Access.WRITE_ONLY)
+    @JsonIgnore
     private String password;
 
     private UserStatusEnum statusEnum;

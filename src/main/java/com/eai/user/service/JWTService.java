@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import com.eai.user.entities.AppUser;
+import com.eai.user.dto.LoginDTO;
 import com.eai.user.exception.InvalidateRequestException;
 
 @Service
@@ -29,29 +29,30 @@ public class JWTService {
     private JwtEncoder jwtAccessTokenEncoder;
     @Autowired
     private AuthenticationManager authenticationManager;
-    
-    public Map<String, String> generateAccessToken(AppUser user) {
-         Map<String, String> maps = new HashMap<>();
+
+    public Map<String, String> generateAccessToken(LoginDTO login) {
+        Map<String, String> maps = new HashMap<>();
         try {
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-        Instant instant = Instant.now();
-        
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword()));
+            Instant instant = Instant.now();
+
             if (authentication.isAuthenticated()) {
                 String roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                         .collect(Collectors.joining(","));
+                        // User user = (User) authentication.getPrincipal();
                 JwtClaimsSet claims = JwtClaimsSet.builder()
                         .issuedAt(instant)
-                        .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
+                        .expiresAt(instant.plus(60, ChronoUnit.MINUTES))
                         .issuer("http://localhost:9008/eai/api/user-management/")
-                        .subject(user.getEmail())
+                        .subject(authentication.getName())
                         .claim("scope", roles)
                         .build();
                 JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters
                         .from(JwsHeader.with(MacAlgorithm.HS256).build(), claims);
                 String token = jwtAccessTokenEncoder.encode(jwtEncoderParameters).getTokenValue();
-              
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
                 maps.put("access-token", token);
             }
         } catch (Exception ex) {
