@@ -12,7 +12,7 @@
 	</parent>
 	<groupId>com.eai.user</groupId>
 	<artifactId>eai-user-management-service</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>user</name>
 	<description>User management service</description>
 	<url />

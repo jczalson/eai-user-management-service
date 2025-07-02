@@ -1,6 +1,7 @@
 package com.eai.user.security;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -94,7 +95,9 @@ public class SecurityConfig {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowCredentials(true);
         corsConfig.setAllowedMethods(Arrays.asList("*"));
-        corsConfig.setAllowedOrigins(Arrays.asList(applicationConfig.getAllowedOrigins()));
+        corsConfig.setAllowedOrigins(List.of(applicationConfig.getAllowedOrigins()));
+       //This part is added to solve CORS issue for Docker
+        corsConfig.addAllowedOriginPattern("*");
         corsConfig.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
