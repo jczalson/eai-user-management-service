@@ -29,7 +29,7 @@ public class JWTService {
     private JwtEncoder jwtAccessTokenEncoder;
     @Autowired
     private AuthenticationManager authenticationManager;
-
+    
     public Map<String, String> generateAccessToken(LoginDTO login) {
         Map<String, String> maps = new HashMap<>();
         try {
@@ -40,12 +40,11 @@ public class JWTService {
             if (authentication.isAuthenticated()) {
                 String roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                         .collect(Collectors.joining(","));
-                        // User user = (User) authentication.getPrincipal();
                 JwtClaimsSet claims = JwtClaimsSet.builder()
                         .issuedAt(instant)
                         .expiresAt(instant.plus(60, ChronoUnit.MINUTES))
                         .issuer("http://localhost:9008/eai/api/user-management/")
-                        .subject(authentication.getName())
+                        .subject(authentication.getName().split("@")[0])
                         .claim("scope", roles)
                         .build();
                 JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters

@@ -26,6 +26,7 @@ import com.eai.user.entities.AppUser;
 import com.eai.user.entities.AppUserRole;
 import com.eai.user.entities.AppUserRoleKey;
 import com.eai.user.exception.InvalidateRequestException;
+import com.eai.user.messaging.producer.UserActivityProducer;
 import com.eai.user.repository.AppRoleRepository;
 import com.eai.user.repository.AppUserRepository;
 import com.eai.user.repository.UserRoleRepository;
@@ -51,6 +52,9 @@ public class AccountServiceImplm implements AccountService {
 
     @Autowired
     private JWTService jwtService;
+
+    @Autowired
+    private UserActivityProducer userActivityProducer;
 
     @Override
     public void addRoleToUser(String email, String roleName) {
@@ -113,6 +117,7 @@ public class AccountServiceImplm implements AccountService {
         Files.copy(file.getInputStream(), filePath);
         userInput.setPhoto(filePath.toUri().toString());
         UserDTO dto = AccountUtilities.fromUserEntityToDto(appUserRepository.save(AccountUtilities.fromUserDtoInputToEntity(userInput)));
+        userActivityProducer.sendUserActivityMessage(dto);
         return dto;
     }
 
