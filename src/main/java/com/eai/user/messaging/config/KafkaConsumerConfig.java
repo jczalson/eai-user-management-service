@@ -2,6 +2,7 @@ package com.eai.user.messaging.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -54,7 +55,7 @@ public class KafkaConsumerConfig {
         if (!"NA".equals(jaasConfig)) {
             config.put(SASL_JAAS_CONFIG, jaasConfig);
         }
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId+UUID.randomUUID());
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, className);

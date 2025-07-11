@@ -28,8 +28,6 @@ public class UserDTO implements Serializable {
 
     private String photo;
 
-    // @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @JsonIgnore
     private byte[] userPhoto;
 
     // @JsonProperty( access = JsonProperty.Access.WRITE_ONLY)
