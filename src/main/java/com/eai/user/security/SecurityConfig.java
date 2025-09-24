@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .requestMatchers( "/account/register",
                    "/account/login","/v3/api-docs/**",
                    "/swagger-ui/**", 
-                    "/swagger-ui.html", "/actuator/**")
+                    "/swagger-ui.html", "/actuator/**","/ws/**","/url/**","/url-conf/**")
                 .permitAll()
                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(op -> op.disable()))
@@ -96,12 +96,11 @@ public class SecurityConfig {
         corsConfig.setAllowCredentials(true);
         corsConfig.setAllowedMethods(Arrays.asList("*"));
         corsConfig.setAllowedOrigins(List.of(applicationConfig.getAllowedOrigins()));
-       //This part is added to solve CORS issue for Docker
+        //This part is added to solve CORS issue for Docker
         corsConfig.addAllowedOriginPattern("*");
         corsConfig.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
         return source;
     }
-
 }

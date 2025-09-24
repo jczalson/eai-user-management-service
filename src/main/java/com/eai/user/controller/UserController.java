@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Authentication;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,11 @@ public class UserController {
 		return ResponseEntity.ok(all);
 	}
 
+	@DeleteMapping("/customers/del/{id}")
+	public ResponseEntity<String> deleteCustomer(@PathVariable Long id){
+       String deleteCustomer = customerService.deleteCustomer(id);
+		return ResponseEntity.ok(deleteCustomer);
+	}
 	@GetMapping("/customers/address/{id}")
 	public ResponseEntity<List<CustomerDTO>> getAllCustomersByIdAddress(@PathVariable long id){
 		List<CustomerDTO> all = customerService.getCustomerByIdAddress(id);

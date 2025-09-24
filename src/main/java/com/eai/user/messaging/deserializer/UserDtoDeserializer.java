@@ -1,4 +1,4 @@
-package com.eai.user.messaging.config.deserializer;
+package com.eai.user.messaging.deserializer;
 
 import java.nio.charset.StandardCharsets;
 

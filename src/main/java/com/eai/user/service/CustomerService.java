@@ -13,4 +13,6 @@ public interface CustomerService {
 	public List<CustomerDTO> getCustomerByIdAddress(long idAddress);
 
 	public CustomerDTO savCustomerDTO(CustomerDTO customerDTO);
+
+	public String deleteCustomer(Long idCustomer);
 }

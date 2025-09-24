@@ -2,6 +2,7 @@ package com.eai.user.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eai.user.dto.ConfigAttributeDTO;
+import com.eai.user.dto.ConfigurationTypeEnum;
 import com.eai.user.dto.LoginDTO;
 import com.eai.user.dto.UserDTO;
 import com.eai.user.dto.UserDTOInput;
@@ -21,12 +24,16 @@ import com.eai.user.entities.AppRole;
 import com.eai.user.entities.UserStatusEnum;
 import com.eai.user.exception.InvalidateRequestException;
 import com.eai.user.service.AccountService;
+import com.eai.user.service.UserConfigurationService;
 
 @RestController
 public class AccountController {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private UserConfigurationService configurationService;
 
     @PostMapping("account/addRole")
     public AppRole saveRole(@RequestBody AppRole appRole) {
@@ -47,7 +54,24 @@ public class AccountController {
 
     @PostMapping("account/login")
     public Map<String, String> login(@RequestBody LoginDTO login) {
+        AtomicBoolean attbute = new AtomicBoolean();
         try {
+            List<ConfigAttributeDTO> config = configurationService.getUserConfigAtt(login.getEmail());
+            if (config != null && config.size() > 0) {
+                config.stream().forEach(cfg -> {
+                    if (cfg.getConfigurationType() != null && cfg.getConfigurationType()
+                            .equals(ConfigurationTypeEnum.LOCATION_CONFIRMATION.getConfigType())) {
+                        cfg.getConfigurationAttributes().stream().forEach(attb -> {
+                            if(attb.getConfiguartionAttribute() != null
+                                    && attb.getConfiguartionAttribute().equals("docking")) {
+                                attbute.set(attb.getConfiguartionEnabled().booleanValue());
+                            }
+                        });
+                    }
+                });
+                System.out.println("BOOLEAN " + attbute.get());
+            }
+
             return accountService.verify(login);
         } catch (Exception ex) {
             throw new InvalidateRequestException(ex.getMessage());
@@ -79,7 +103,8 @@ public class AccountController {
         List<UserDTO> listOfUsers = accountService.listOfUsers();
         return listOfUsers;
     }
-     @GetMapping("account/user/{id}")
+
+    @GetMapping("account/user/{id}")
     public UserDTO getUsers(@PathVariable String id) throws Exception {
         UserDTO user = accountService.loadUserByUsername(id);
         return user;

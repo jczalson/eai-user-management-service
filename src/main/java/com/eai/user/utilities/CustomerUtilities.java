@@ -44,6 +44,9 @@ public class CustomerUtilities {
 	public static CustomerEntity fromDtoToCustomerEntity(CustomerDTO dto) {
 		
 		CustomerEntity entity = new CustomerEntity();
+
+		if(dto.getCustomerId() != null)
+		entity.setCustomerId(dto.getCustomerId());
 		
 		if(StringUtils.isNotBlank(dto.getName()))
 			entity.setName(dto.getName());

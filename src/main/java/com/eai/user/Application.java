@@ -1,5 +1,10 @@
 package com.eai.user;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -10,7 +15,12 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 
 import com.eai.user.configuration.ApplicationConfig;
+import com.eai.user.dto.ConfigAttributeDTO;
+import com.eai.user.repository.CustomerRepository;
 import com.eai.user.service.AccountService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -19,18 +29,18 @@ import com.eai.user.service.AccountService;
 public class Application {
 
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-
+    private Logger logger = LoggerFactory.getLogger(Application.class);
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 
 	// @Bean
-    // PasswordEncoder passwordEncoder(){
-	// 	return new BCryptPasswordEncoder();
+	// PasswordEncoder passwordEncoder(){
+	// return new BCryptPasswordEncoder();
 	// }
 
 	@Bean
-	CommandLineRunner CommandLineRunner(@Autowired AccountService accountService) {
+	CommandLineRunner CommandLineRunner(@Autowired CustomerRepository customerRepository) {
 
 		return args -> {
 			// AppRole appRole1 = new AppRole();
@@ -59,14 +69,30 @@ public class Application {
 			// appUser3.setUserStatusEnum(UserStatusEnum.CREATED);
 			// accountService.addUser(appUser3);
 
-
-
 			// accountService.addRoleToUser(appUser1.getEmail(), "USER");
 			// accountService.addRoleToUser(appUser1.getEmail(), "ADMIN");
 
 			// accountService.addRoleToUser(appUser2.getEmail(), "USER");
 			// accountService.addRoleToUser(appUser3.getEmail(), "ADMIN");
+			// getJsonFile(customerRepository);
 		};
+	}
+
+	private List<ConfigAttributeDTO> getJsonFile(CustomerRepository customerRepository) {
+		Optional<String> jsonFile = customerRepository.findJsonFile("jc@gmail.com");
+		if (jsonFile.isPresent()) {
+			List<ConfigAttributeDTO> config = null;
+			try{
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+			mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+			 config = mapper.readValue(jsonFile.get(),new TypeReference<List<ConfigAttributeDTO>>(){});
+			}catch(Exception ex){
+logger.warn("Exception while deserializing Configuration Object, Disregard this exception", ex);
+			}
+			return config;
+		}
+		return null;
 	}
 
 }

@@ -18,7 +18,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import com.eai.user.dto.UserDTO;
-import com.eai.user.messaging.config.deserializer.UserDtoDeserializer;
+import com.eai.user.messaging.deserializer.UserDtoDeserializer;
 
 @Configuration
 @EnableKafka

@@ -1,0 +1,41 @@
+spring:
+  cloud:
+    config:
+      override-system-properties: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/userdb
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    generate-ddl: true
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        default_schema: EAI_SCHEMA
+        format_sql: true
+eai:
+  allowed-origins:
+    - http://localhost:4200
+jwt:
+  secret-key: s2233eerrttg56666666yyy777899jjhrttgtthduurjuuhjjuuhajeishhgfwh      
+listen:
+  event:
+    topic: true
+             
+userActivity:
+  stomp:
+    topic: /topic/message/userActivity/
+  kafka:
+    topic: network.eai.userActivity  
+bootstrap:
+  servers: localhost:9092 
+  
+security:
+  protocol: NA
+
+sasl:
+  mechanism: NA
+  jaas:
+    config: NA        

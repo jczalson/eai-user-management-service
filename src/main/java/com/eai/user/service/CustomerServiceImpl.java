@@ -63,8 +63,17 @@ public class CustomerServiceImpl implements CustomerService {
 			errors.add("Customer name is required");
 			throw new InvalidateRequestException("Customer name is required");
 		}
-         CustomerEntity save = customerRepository.save(CustomerUtilities.fromDtoToCustomerEntity(customerDTO));
-		
+		 CustomerEntity save = customerRepository.save(CustomerUtilities.fromDtoToCustomerEntity(customerDTO));
 	return CustomerUtilities.fromCustomerEntityToDto(save);
+	}
+
+	@Override
+	public String deleteCustomer(Long idCustomer) {
+		CustomerDTO customer = getCustomerId(idCustomer);
+		if(customer !=null){
+			customerRepository.deleteById(customer.getCustomerId());
+			return customer.getName();
+		}
+		return null;
 	}
 }

@@ -35,8 +35,8 @@ public class AddressUtilities {
 		
 		AddressEntity entity = new AddressEntity();
 		
-		// if(dto.getIdAddress() !=null)
-		// 	entity.setAddressId(dto.getIdAddress());
+		if(dto.getAddressId() !=null)
+			entity.setIdAddress(dto.getAddressId());
 		
 		if(dto.getZipCode() !=null)
 			entity.setZipCode(dto.getZipCode());
