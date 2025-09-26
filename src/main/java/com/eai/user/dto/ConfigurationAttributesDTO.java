@@ -13,9 +13,9 @@ public class ConfigurationAttributesDTO implements Serializable {
 
  private static final long serialVersionUID = 1L;
 
- private String configuartionAttribute;
+ private String configurationAttribute;
 
- private Boolean configuartionEnabled;
+ private Boolean configurationEnabled;
 
  private String configurationValue;
 

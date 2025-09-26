@@ -62,9 +62,9 @@ public class AccountController {
                     if (cfg.getConfigurationType() != null && cfg.getConfigurationType()
                             .equals(ConfigurationTypeEnum.LOCATION_CONFIRMATION.getConfigType())) {
                         cfg.getConfigurationAttributes().stream().forEach(attb -> {
-                            if(attb.getConfiguartionAttribute() != null
-                                    && attb.getConfiguartionAttribute().equals("docking")) {
-                                attbute.set(attb.getConfiguartionEnabled().booleanValue());
+                            if(attb.getConfigurationAttribute() != null
+                                    && attb.getConfigurationAttribute().equals("docking")) {
+                                attbute.set(attb.getConfigurationEnabled().booleanValue());
                             }
                         });
                     }
