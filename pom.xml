@@ -129,6 +129,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -153,6 +154,12 @@
 	<profiles>
 		<profile>
 			<id>local</id>
+			<!-- <activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<spring.profiles.active>local</spring.profiles.active>
+			</properties> -->
 			<dependencies>
 				<dependency>
 					<groupId>com.h2database</groupId>
@@ -161,5 +168,14 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<!-- <profile>
+		<id>dev</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<spring.profiles.active>dev</spring.profiles.active>
+			</properties>
+		</profile> -->
 	</profiles>
 </project>

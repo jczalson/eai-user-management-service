@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import com.eai.user.dto.UserDTO;
 import com.eai.user.dto.UserDTOInput;
@@ -46,6 +47,7 @@ public class AccountUtilities {
             entity.setPhoto(userDto.getPhoto());
         }
 
+        BeanUtils.copyProperties(userDto, entity);
         return entity;
     }
 
@@ -59,7 +61,7 @@ public class AccountUtilities {
         if (StringUtils.isNotBlank(inputUser.getPhoto())) {
             entity.setPhoto(inputUser.getPhoto());
         }
-
+ BeanUtils.copyProperties(inputUser, entity);
         return entity;
     }
 }

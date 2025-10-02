@@ -5,6 +5,9 @@ spring:
     import: optional:configserver:${eai-config-server-details:http://localhost:8888}
   jmx:
     enabled: true
+  #property set into pom.xml
+  # profiles:
+  #   active: @spring.profiles.active@  
   security:
     oauth2:
       client:

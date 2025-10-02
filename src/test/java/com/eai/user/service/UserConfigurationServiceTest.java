@@ -29,14 +29,14 @@ public class UserConfigurationServiceTest {
 
     @Test
     public void testConfig() {
-      String str ="[{\"configurationType\":\"locationConfirmation\",\"configurationAttributes\":[{\"configurationAttribute\":\"docking\",\"configurationEnabled\":\"true\",\"configurationValue\":null}],\"updatedDate\":\"2025-04-25\",\"createdBy\":\"JC\"}]";
+      String str ="[{\"configurationType\":\"LOCATION_CONFIRMATION\",\"configurationAttributes\":[{\"configurationAttribute\":\"docking\",\"configurationEnabled\":\"true\",\"configurationValue\":null}],\"updatedDate\":\"2025-04-25\",\"createdBy\":\"JC\"}]";
       when(customerRepository.findJsonFile("jc@gmail.com")).thenReturn(Optional.of(str));
       List<ConfigAttributeDTO> userConfigAtt = configService.getUserConfigAtt("jc@gmail.com");
       assertNotNull(userConfigAtt);
       AtomicBoolean attbute = new AtomicBoolean();
  if (userConfigAtt != null && userConfigAtt.size() > 0) {
                 userConfigAtt.stream().forEach(cfg -> {
-                    if (cfg.getConfigurationType() != null && cfg.getConfigurationType()
+                    if (cfg.getConfigurationType() != null && cfg.getConfigurationType().getConfigType()
                             .equals(ConfigurationTypeEnum.LOCATION_CONFIRMATION.getConfigType())) {
                         cfg.getConfigurationAttributes().stream().forEach(attb -> {
                             if(attb.getConfigurationAttribute() != null

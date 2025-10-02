@@ -15,7 +15,7 @@ public class ConfigAttributeDTO implements Serializable {
 
  private static final long serialVersionUID = 1L;
 
- private String configurationType;
+ private ConfigurationTypeEnum configurationType;
 
  private List<ConfigurationAttributesDTO> configurationAttributes;
 

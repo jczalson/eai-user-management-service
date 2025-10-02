@@ -59,8 +59,8 @@ public class AccountController {
             List<ConfigAttributeDTO> config = configurationService.getUserConfigAtt(login.getEmail());
             if (config != null && config.size() > 0) {
                 config.stream().forEach(cfg -> {
-                    if (cfg.getConfigurationType() != null && cfg.getConfigurationType()
-                            .equals(ConfigurationTypeEnum.LOCATION_CONFIRMATION.getConfigType())) {
+                    if (cfg.getConfigurationType() != null && cfg.getConfigurationType().name()
+                            .equals(ConfigurationTypeEnum.LOCATION_CONFIRMATION.name())) {
                         cfg.getConfigurationAttributes().stream().forEach(attb -> {
                             if(attb.getConfigurationAttribute() != null
                                     && attb.getConfigurationAttribute().equals("docking")) {
