@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.eai.user.dto.AddressDTO;
 import com.eai.user.dto.CustomerDTO;
 import com.eai.user.entities.CustomerEntity;
 import com.eai.user.exception.InvalidateRequestException;
@@ -37,7 +39,7 @@ public class CustomerServiceImpl implements CustomerService {
 	public List<CustomerDTO> getCustomerByIdAddress(long idAddress) {
 		List<CustomerDTO>  list = new ArrayList<CustomerDTO>();
 		Optional<List<CustomerEntity>> customers = customerRepository.findCustomersByIdAddress(idAddress);
-			customers.get().stream().forEach(customer->{ list.add(CustomerUtilities.fromCustomerEntityToDto(customer));});
+			customers.get().parallelStream().forEach(customer->{ list.add(CustomerUtilities.fromCustomerEntityToDto(customer));});
 		return list;
 	}
 
@@ -55,6 +57,13 @@ public class CustomerServiceImpl implements CustomerService {
 	public CustomerDTO savCustomerDTO(CustomerDTO customerDTO) {
 	
 	List<String> errors = new ArrayList<>();	
+	if(StringUtils.isNotBlank(customerDTO.getEmail())){
+      Optional<CustomerEntity> emailExistsAlready = customerRepository.findByEmail(customerDTO.getEmail());
+	  if(emailExistsAlready.isPresent()){
+		throw new InvalidateRequestException("This email "+ customerDTO.getEmail()+ " already exists please change it ");
+	  }
+	}
+
 	if(StringUtils.isBlank(customerDTO.getEmail())){
 		errors.add("Email address is required");
 			throw new  InvalidateRequestException("Email address is required");
@@ -76,4 +85,18 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 		return null;
 	}
+
+	@Override
+	public CustomerDTO getCustomeByEmail(String email) {
+		CustomerDTO dto = new CustomerDTO();
+		AddressDTO addressDTO = new AddressDTO();
+	Optional<CustomerEntity> entity =	customerRepository.findByEmail(email);
+	if(entity.isPresent()){
+		 BeanUtils.copyProperties(entity.get(), dto);
+		 BeanUtils.copyProperties(entity.get().getAddressEntity(), addressDTO);
+		  dto.setAddressDTO(addressDTO);
+		 return dto;
+	}
+	return null;
+}
 }

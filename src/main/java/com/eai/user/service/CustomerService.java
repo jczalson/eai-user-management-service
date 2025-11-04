@@ -15,4 +15,6 @@ public interface CustomerService {
 	public CustomerDTO savCustomerDTO(CustomerDTO customerDTO);
 
 	public String deleteCustomer(Long idCustomer);
+
+	public CustomerDTO getCustomeByEmail(String email);
 }

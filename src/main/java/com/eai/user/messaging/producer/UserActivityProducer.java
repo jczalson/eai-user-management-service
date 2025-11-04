@@ -11,6 +11,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.eai.user.dto.UserDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Service
 public class UserActivityProducer {
@@ -34,9 +37,23 @@ public class UserActivityProducer {
         = new ProducerRecord<String,UserDTO>(userActivityTopic,null,
                 userDTO.getName(),userDTO,null);
         try {
+            logger.info("UserDTO in JSON {}",convertToJson(userDTO));
             userActivityTemplate.send(producerRecord).get();
         } catch (InterruptedException | ExecutionException e) {
             logger.error("Error occurred when produce UserDTO", e);
         }
+    }
+
+
+    public String convertToJson(Object obj){
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        String result = null;
+        try {
+          result =  mapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            result = "{\"error\":\"Can't convert Object to JSON\"}";
+        }
+     return result;
     }
 }

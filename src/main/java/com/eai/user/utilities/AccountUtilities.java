@@ -21,6 +21,7 @@ public class AccountUtilities {
         dto.setStatusEnum(user.getUserStatusEnum());
         dto.setUserName(user.getEmail());
         dto.setName(user.getName());
+        dto.setIsMfa(user.getIsMfa());
         if (StringUtils.isNotBlank(user.getPhoto())) {
             dto.setPhoto(user.getPhoto());
             try {
@@ -46,7 +47,7 @@ public class AccountUtilities {
         if (StringUtils.isNotBlank(userDto.getPhoto())) {
             entity.setPhoto(userDto.getPhoto());
         }
-
+        entity.setIsMfa(userDto.getIsMfa());
         BeanUtils.copyProperties(userDto, entity);
         return entity;
     }

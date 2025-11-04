@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,11 +15,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.eai.user.dto.LoginDTO;
+import com.eai.user.dto.TwoFactorVerificationsDTO;
 import com.eai.user.dto.UserDTO;
 import com.eai.user.dto.UserDTOInput;
 import com.eai.user.entities.AppRole;
@@ -33,9 +35,11 @@ import com.eai.user.repository.UserRoleRepository;
 import com.eai.user.utilities.AccountUtilities;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class AccountServiceImplm implements AccountService {
 
     @Autowired
@@ -52,6 +56,9 @@ public class AccountServiceImplm implements AccountService {
 
     @Autowired
     private JWTService jwtService;
+
+    @Autowired
+    private TwoFactorVerificationsService twoFactorVerificationsService;
 
     @Autowired
     private UserActivityProducer userActivityProducer;
@@ -81,7 +88,7 @@ public class AccountServiceImplm implements AccountService {
     }
 
     @Override
-    public UserDTO loadUserByUsername(String email)  {
+    public UserDTO loadUserByUsername(String email) {
         Optional<AppUser> user = appUserRepository.findUserByEmailAndStatus(email);
         if (user.isPresent()) {
             return AccountUtilities.fromUserEntityToDto(user.get());
@@ -107,16 +114,17 @@ public class AccountServiceImplm implements AccountService {
     @Override
     public UserDTO addUser(MultipartFile file, UserDTOInput userInput) throws IOException {
         userInput.setPassword(passwordEncoder.encode(userInput.getPassword()));
-        Path folderPath = Paths.get(System.getProperty("user.home"), "zale-data","pictures");
-        if(!Files.exists(folderPath)){
-           Files.createDirectories(folderPath);
+        Path folderPath = Paths.get(System.getProperty("user.home"), "zale-data", "pictures");
+        if (!Files.exists(folderPath)) {
+            Files.createDirectories(folderPath);
         }
         // String fileName = UUID.randomUUID().toString();
-        Path filePath = Paths.get(System.getProperty("user.home"), "zale-data","pictures"
-        ,LocalDate.now()+"_"+System.currentTimeMillis()+"_"+userInput.getEmail().split("@")[0]);
+        Path filePath = Paths.get(System.getProperty("user.home"), "zale-data", "pictures",
+                LocalDate.now() + "_" + System.currentTimeMillis() + "_" + userInput.getEmail().split("@")[0]);
         Files.copy(file.getInputStream(), filePath);
         userInput.setPhoto(filePath.toUri().toString());
-        UserDTO dto = AccountUtilities.fromUserEntityToDto(appUserRepository.save(AccountUtilities.fromUserDtoInputToEntity(userInput)));
+        UserDTO dto = AccountUtilities
+                .fromUserEntityToDto(appUserRepository.save(AccountUtilities.fromUserDtoInputToEntity(userInput)));
         userActivityProducer.sendUserActivityMessage(dto);
         return dto;
     }
@@ -139,10 +147,60 @@ public class AccountServiceImplm implements AccountService {
         return mapRoles;
     }
 
+    // @Override
+    // public String createAccessToken(UserDTO user) throws Exception {
+    // return jwtService.generateAccessToken(user);
+
+    // }
+
+    // @Override
+    // public String createRefreshToken(UserDTO user) throws Exception {
+    // return jwtService.generateRefreshToken(user);
+
+    // }
+
     @Override
-    public Map<String, String> verify(LoginDTO login) throws Exception {
-                return jwtService.generateAccessToken(login);
-                
+    public UserDTO verify(String email, String code) {
+        if (isCodeExpired(code)) {
+            throw new InvalidateRequestException("Code is expired. Please login again");
+        }
+        try {
+            UserDTO userEmail = this.loadUserByUsername(email);
+            TwoFactorVerificationsDTO userFromFactorVerificationByCode = this.twoFactorVerificationsService
+                    .getUserFromFactorVerificationByCode(code);
+            UserDTO userCode = userFromFactorVerificationByCode.getUser();
+            if (userFromFactorVerificationByCode != null && userFromFactorVerificationByCode != null
+                    && userFromFactorVerificationByCode.getUser() != null) {
+                if (userCode.getUserName().equalsIgnoreCase(userEmail.getUserName())) {
+                    twoFactorVerificationsService.deleteCode(userFromFactorVerificationByCode);
+                    return userEmail;
+                } else {
+                    throw new InvalidateRequestException("Code is invalid. please try again");
+                }
+            }
+        } catch (EmptyResultDataAccessException ex) {
+            throw new InvalidateRequestException("Could not find record");
+        } catch (Exception ex) {
+            throw new InvalidateRequestException("Could not find record");
+        }
+        return null;
+    }
+
+    private boolean isCodeExpired(String code) {
+        try {
+            TwoFactorVerificationsDTO two = twoFactorVerificationsService.getUserFromFactorVerificationByCode(code);
+            return two != null && two.getExpiryDate() != null && two.getExpiryDate().isBefore(LocalDateTime.now());
+
+        } catch (Exception e) {
+            throw new InvalidateRequestException("Record not found " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void sendVerificationCode(UserDTO user) {
+        TwoFactorVerificationsDTO verificationCode = twoFactorVerificationsService
+                .createVerificationCode(user.getIdUser());
+        log.info("Verification code: " + verificationCode.getCode());
     }
 
 }

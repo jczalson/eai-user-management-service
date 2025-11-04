@@ -36,20 +36,20 @@ public class CustomerServiceTest {
     @Test
     public void testGetCustomerByIdAddress() {
         List<CustomerEntity> customerList = new ArrayList<>();
-        customerList.add(createCustomer());
+        customerList.add(createCustomerEntity());
         Optional<List<CustomerEntity>> optional = Optional.of(customerList);
         when(customerRepository.findCustomersByIdAddress(1))
                 .thenReturn(optional);
         List<CustomerDTO> list = customerService.getCustomerByIdAddress(1);
         assertNotNull(list);
-        Assertions.assertEquals(list.get(0).getCustomerId(), createCustomer().getCustomerId());
+        Assertions.assertEquals(list.get(0).getCustomerId(), createCustomerEntity().getCustomerId());
     }
 
     @Test
     public void testSaveCustomer() {
-        when(customerRepository.save(any(CustomerEntity.class))).thenReturn(createCustomer());
+        when(customerRepository.save(any(CustomerEntity.class))).thenReturn(createCustomerEntity());
         CustomerDTO savCustomerDTO = customerService
-                .savCustomerDTO(CustomerUtilities.fromCustomerEntityToDto(createCustomer()));
+                .savCustomerDTO(CustomerUtilities.fromCustomerEntityToDto(createCustomerEntity()));
         assertNotNull(savCustomerDTO);
     }
 
@@ -62,20 +62,34 @@ public class CustomerServiceTest {
 
      @Test
     public void testDeleteCustomer() {
-       Optional<CustomerEntity> optional = Optional.of(createCustomer());
+       Optional<CustomerEntity> optional = Optional.of(createCustomerEntity());
        when(customerRepository.findById(1L)).thenReturn(optional);
        String deletedUserName = customerService.deleteCustomer(optional.get().getCustomerId());
         Assertions.assertEquals(optional.get().getName(),deletedUserName);
     }
 
-    private CustomerEntity createCustomer() {
+    @Test
+    public void testGetCustomerByEmail(){
+        when(customerRepository.findByEmail("jc@gmail.com")).thenReturn(Optional.of(createCustomerEntity()));
+        CustomerDTO customeByEmail = customerService.getCustomeByEmail("jc@gmail.com");
+        assertNotNull(customeByEmail);
+        Assertions.assertEquals("jc@gmail.com", customeByEmail.getEmail());
+    }
+
+     @Test
+    public void testGetCustomerByEmailAlreadyExist(){
+        when(customerRepository.findByEmail("jc@gmail.com")).thenReturn(Optional.of(createCustomerEntity()));
+       assertThrows(InvalidateRequestException.class, ()->customerService.savCustomerDTO(CustomerUtilities.fromCustomerEntityToDto(createCustomerEntity())));
+    }
+    private CustomerEntity createCustomerEntity() {
         CustomerEntity cust = new CustomerEntity();
         cust.setCustomerId(1L);
-        cust.setEmail("jc@mail.com");
+        cust.setEmail("jc@gmail.com");
         cust.setCustomerType(CustomerType.ACTIVE);
         cust.setName("jc");
         AddressEntity address = new AddressEntity();
         address.setIdAddress(1L);
+        address.setCity("FERRARA");
         cust.setAddressEntity(address);
         return cust;
     }

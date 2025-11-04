@@ -12,7 +12,7 @@ public class AddressUtilities {
 		AddressDTO addressDTO = new AddressDTO();
 		
 		if(entity.getIdAddress() !=null)
-			addressDTO.setAddressId(entity.getIdAddress());
+			addressDTO.setIdAddress(entity.getIdAddress());
 		
 		if(entity.getZipCode() !=null)
 			addressDTO.setZipCode(entity.getZipCode());
@@ -35,8 +35,8 @@ public class AddressUtilities {
 		
 		AddressEntity entity = new AddressEntity();
 		
-		if(dto.getAddressId() !=null)
-			entity.setIdAddress(dto.getAddressId());
+		if(dto.getIdAddress() !=null)
+			entity.setIdAddress(dto.getIdAddress());
 		
 		if(dto.getZipCode() !=null)
 			entity.setZipCode(dto.getZipCode());

@@ -26,7 +26,7 @@ public class UserActivityConsumer {
         logger.info("User DTO consumed {}",userDTO);
 
         if(userDTO.getUserName() != null){
-           messagingTemplate.convertAndSend(userActivityStompTopic +userDTO.getUserName().split("@")[0], userDTO);
+           messagingTemplate.convertAndSend(userActivityStompTopic, userDTO);
         logger.info("End: Message processed by UserDTO stomp consumer: {}", userDTO);
         }
     }

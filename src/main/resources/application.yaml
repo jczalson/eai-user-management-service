@@ -5,6 +5,9 @@ spring:
     import: optional:configserver:${eai-config-server-details:http://localhost:8888}
   jmx:
     enabled: true
+    #To allow circular dependency or use @Lazy on the bean
+  # main:
+  #   allow-circular-references: true  
   #property set into pom.xml
   # profiles:
   #   active: @spring.profiles.active@  
@@ -32,4 +35,8 @@ management:
         include: health, refresh, conditions
     jmx:
       exposure:
-        include: health, refresh, info     		
+        include: health, refresh, info    
+
+application:
+  title: App Customer
+  version: 1.2        

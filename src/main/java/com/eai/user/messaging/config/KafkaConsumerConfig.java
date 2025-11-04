@@ -46,13 +46,13 @@ public class KafkaConsumerConfig {
     public Map<String, Object> getConfigForConsumer(Class<?> className, String groupId) {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
-        if (!"NA".equals(securityProtocol)) {
+        if (!securityProtocol.equals("NA")) {
             config.put(SECURITY_PROTOCOL, securityProtocol);
         }
-        if (!"NA".equals(saslMeccanism)) {
+        if (!saslMeccanism.equals("NA")) {
             config.put(SASL_MECHANISM, saslMeccanism);
         }
-        if (!"NA".equals(jaasConfig)) {
+        if (!jaasConfig.equals("NA")) {
             config.put(SASL_JAAS_CONFIG, jaasConfig);
         }
         config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId+UUID.randomUUID());

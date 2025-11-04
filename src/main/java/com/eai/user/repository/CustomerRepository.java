@@ -17,4 +17,5 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> 
    @Query("select c.configJson from CustomerEntity c where c.email =:email")
    Optional<String> findJsonFile(@Param("email") String email);
 
+   public Optional<CustomerEntity> findByEmail(String email);
 }

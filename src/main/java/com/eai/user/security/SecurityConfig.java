@@ -24,17 +24,24 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.eai.user.configuration.ApplicationConfig;
+import com.eai.user.filter.CustomAuthorizationFilter;
+import com.eai.user.handler.CustomAccessDeniedHandler;
+import com.eai.user.handler.CustomAuthEntryPoint;
 import com.eai.user.service.MyCustomeUserService;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     
@@ -46,22 +53,37 @@ public class SecurityConfig {
 
     @Autowired
     private  MyCustomeUserService myCustomeUserService;
+    
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
+
+    @Autowired
+    private CustomAuthEntryPoint customAuthEntryPoint;
+
+    @Autowired
+    private CustomAuthorizationFilter customAuthorizationFilter;
+
+    private static final String [] PUBLIC_URLS = {"/account/register",
+                   "/account/login","/v3/api-docs/**",
+                   "/swagger-ui/**","/account/verify/code/**",
+                    "/swagger-ui.html", "/actuator/**","/ws/**","/url/**","/url-conf/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
-                .requestMatchers( "/account/register",
-                   "/account/login","/v3/api-docs/**",
-                   "/swagger-ui/**", 
-                    "/swagger-ui.html", "/actuator/**","/ws/**","/url/**","/url-conf/**")
-                .permitAll()
-                .anyRequest().authenticated())
+                .requestMatchers(PUBLIC_URLS)
+                .permitAll())
+                .authorizeHttpRequests(request -> request.anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(op -> op.disable()))
                 .cors(cors -> cors.configurationSource(configurerCorsConfigurer()))
                 .oauth2ResourceServer(oaut ->oaut.jwt(Customizer.withDefaults())) 
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .build();
+                .exceptionHandling(exception -> 
+                   exception.accessDeniedHandler(accessDeniedHandler)
+                   .authenticationEntryPoint(customAuthEntryPoint))
+                   .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                 .build();
     }
 
     @Bean
@@ -82,6 +104,7 @@ public class SecurityConfig {
     }
 
    
+    @SuppressWarnings("deprecation")
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();

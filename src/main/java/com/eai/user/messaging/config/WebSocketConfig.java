@@ -17,20 +17,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Autowired
     private ApplicationConfig applicationConfig;
 
-    // @Autowired
-    // private TaskScheduler scheduler;
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-      registry.addEndpoint("/ws")
-        .setAllowedOrigins(applicationConfig.getAllowedOrigins());
-       registry.addEndpoint("/ws")
-        .setAllowedOrigins(applicationConfig.getAllowedOrigins())
-        .withSockJS();
+      //  registry.addEndpoint("/ws")
+      //   .setAllowedOrigins(applicationConfig.getAllowedOrigins())
+      //   .withSockJS();
+
+        registry.addEndpoint("/ws").setAllowedOriginPatterns(applicationConfig.getAllowedOrigins()).withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config){
       config.enableSimpleBroker("/topic/message");
+      config.setApplicationDestinationPrefixes("/app");
     }
 }

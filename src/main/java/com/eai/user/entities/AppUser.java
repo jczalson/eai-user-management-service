@@ -48,6 +48,8 @@ public class AppUser implements Serializable {
     @Column(name = "status")
     private UserStatusEnum userStatusEnum;
     
+    @Column(name = "is_mfa")
+    private Boolean isMfa;
     // @ManyToMany
     // @JoinTable(name = "APP_USER_ROLE",
     // joinColumns = @JoinColumn(name = "ID_USER"),

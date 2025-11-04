@@ -9,12 +9,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 @ToString
 public class UserDTO implements Serializable {
 
@@ -28,6 +29,8 @@ public class UserDTO implements Serializable {
 
     private String photo;
 
+    private Boolean isMfa;
+    //  @JsonIgnore
     private byte[] userPhoto;
 
     // @JsonProperty( access = JsonProperty.Access.WRITE_ONLY)

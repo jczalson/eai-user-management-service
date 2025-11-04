@@ -27,5 +27,11 @@ public interface AccountService {
 
     public Map<String, List<String>> findRolesByUserName(String userName);
 
-    public Map<String, String> verify(LoginDTO user) throws Exception;
+    // public String  createAccessToken(UserDTO user) throws Exception;
+    
+    // public String  createRefreshToken(UserDTO user) throws Exception;
+
+    public UserDTO verify(String email,String code);
+
+    public void sendVerificationCode(UserDTO user);
 }

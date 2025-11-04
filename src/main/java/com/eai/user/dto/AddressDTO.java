@@ -17,7 +17,7 @@ public class AddressDTO implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 		
-	private Long addressId;
+	private Long idAddress;
 	
 	private String streetName;
 		

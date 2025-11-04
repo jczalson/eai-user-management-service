@@ -62,7 +62,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, UserDTO> producerUserActivityFactory() {
+    public DefaultKafkaProducerFactory<String, UserDTO> producerUserActivityFactory() {
         return new DefaultKafkaProducerFactory<String, UserDTO>(getConfigForProducer());
     }
 
