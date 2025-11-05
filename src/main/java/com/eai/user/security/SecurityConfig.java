@@ -68,6 +68,8 @@ public class SecurityConfig {
                    "/swagger-ui/**","/account/verify/code/**",
                     "/swagger-ui.html", "/actuator/**","/ws/**","/url/**","/url-conf/**"};
 
+                    // private static final String [] PUBLIC_URLS = {"/**"};
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(customizer -> customizer.disable())

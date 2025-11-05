@@ -81,7 +81,7 @@ public class UserController {
 	  public ResponseEntity<HttpResponse> createUser(@RequestBody CustomerDTO customerDTO){
       CustomerDTO customerDTO2 = customerService.savCustomerDTO(customerDTO);
 	  log.info("customer:{}",customerDTO2);
-	  return ResponseEntity.created(getUri()).body(
+	  return ResponseEntity.ok().body(
 		HttpResponse.builder()
 		.timeStamp(LocalDateTime.now().toString())
 		.data(Map.of("user", customerDTO2))

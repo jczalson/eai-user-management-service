@@ -54,8 +54,8 @@ public class AccountServiceImplm implements AccountService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JWTService jwtService;
+    // @Autowired
+    // private JWTService jwtService;
 
     @Autowired
     private TwoFactorVerificationsService twoFactorVerificationsService;

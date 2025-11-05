@@ -20,6 +20,8 @@ public class HttpResponse {
 
     private String reason;
 
+    private String developerMessage;
+
     private String timeStamp;
 
     private HttpStatus status;

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.eai.user.dto.LoginDTO;
 import com.eai.user.dto.UserDTO;
 import com.eai.user.dto.UserDTOInput;
 import com.eai.user.entities.AppRole;
@@ -27,11 +26,11 @@ public interface AccountService {
 
     public Map<String, List<String>> findRolesByUserName(String userName);
 
-    // public String  createAccessToken(UserDTO user) throws Exception;
-    
-    // public String  createRefreshToken(UserDTO user) throws Exception;
+    // public String createAccessToken(UserDTO user) throws Exception;
 
-    public UserDTO verify(String email,String code);
+    // public String createRefreshToken(UserDTO user) throws Exception;
+
+    public UserDTO verify(String email, String code);
 
     public void sendVerificationCode(UserDTO user);
 }

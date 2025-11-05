@@ -14,6 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,7 +44,9 @@ public class CustomerEntity implements Serializable {
 	@Column(name = "NM")
 	private String name;
 	
-	@Column(name = "EMAIL")
+	@NotEmpty(message = "Email cannot be empty")
+    @Email(message ="Invalid email. please insert the correct email")
+	@Column(name = "EMAIL", unique = true)
 	private String email;
 	
 	@Column(name = "CUSTOMER_TYPE") 

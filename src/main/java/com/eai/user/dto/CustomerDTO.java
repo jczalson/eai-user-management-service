@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +32,8 @@ public class CustomerDTO implements Serializable {
 	
 	private String name;
 	
+	@NotEmpty(message = "Email cannot be empty")
+    @Email(message ="Invalid email. please insert the correct email")
 	private String email;
 	
 	@JsonSerialize(using = LocalDateTimeSerializer.class)
