@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Bean;
 import com.eai.user.configuration.ApplicationConfig;
 import com.eai.user.dto.ConfigAttributeDTO;
 import com.eai.user.repository.CustomerRepository;
-import com.eai.user.service.AccountService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

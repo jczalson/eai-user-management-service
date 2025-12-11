@@ -77,12 +77,12 @@ public class HandleException extends ResponseEntityExceptionHandler implements E
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Object> badCredentialsException(BadCredentialsException exception) {
-       log.error(exception.getMessage());
+       log.error("Bad credentials error: "+exception.getMessage());
         return new ResponseEntity<>(
          HttpResponse.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .reason(exception.getMessage()+" , Incorrect email or password")
+                .reason("Incorrect email or password")
                 .developerMessage(exception.getMessage())
                 .timeStamp(LocalDateTime.now().toString())
                 .build(),HttpStatus.BAD_REQUEST);

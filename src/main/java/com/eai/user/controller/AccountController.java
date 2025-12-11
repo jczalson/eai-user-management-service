@@ -87,43 +87,49 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<HttpResponse> login(@RequestBody LoginDTO login) {
-        // AtomicBoolean attbute = new AtomicBoolean();
-        try {
-            authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword()));
-            UserDTO userDto = accountService.loadUserByUsername(login.getEmail());
-                    return userDto.getIsMfa().booleanValue()? sendVerificationCode(userDto) : sendResponse(userDto);
-        } catch (Exception ex) {
-            throw new InvalidateRequestException(ex.getMessage());
-        }
+    public ResponseEntity<HttpResponse> login(@RequestBody LoginDTO login) throws Exception {
+        // HandleException is built for all excptions
+            Authentication authenication = authenticate(login);
+            UserDTO userDto = getAuthenticatedUser(authenication);
+            return userDto.getIsMfa().booleanValue() ? sendVerificationCode(userDto) : sendResponse(userDto);
+    }
 
+    private UserDTO getAuthenticatedUser(Authentication authenication) {
+        return ((UserPrincipal) authenication.getPrincipal()).getUser();
+    }
+
+    private Authentication authenticate(LoginDTO login) {
+        Authentication authentication;
+        authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword()));
+        return authentication;
     }
 
     private ResponseEntity<HttpResponse> sendVerificationCode(UserDTO user) {
-    accountService.sendVerificationCode(user);
+        accountService.sendVerificationCode(user);
         return ResponseEntity.ok().body(
-        HttpResponse.builder()
-                .timeStamp(LocalDateTime.now().toString())
-                .data(Map.of("user", user))
-                .message("Verification code sent")
-                .status(HttpStatus.OK)
-                .statusCode(HttpStatus.OK.value())
-                .build()); 
+                HttpResponse.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .data(Map.of("user", user))
+                        .message("Verification code sent")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
     private ResponseEntity<HttpResponse> sendResponse(UserDTO userDto) throws Exception {
         return ResponseEntity.ok().body(
-        HttpResponse.builder()
-                .timeStamp(LocalDateTime.now().toString())
-                .data(Map.of("access-token", this.jwtService.generateAccessToken(getUserPrincipal(userDto)),
-                        "refresh-token", this.jwtService.generateRefreshToken(getUserPrincipal(userDto))))
-                .message("Login success")
-                .status(HttpStatus.OK)
-                .statusCode(HttpStatus.OK.value())
-                .build());
+                HttpResponse.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .data(Map.of("access-token", this.jwtService.generateAccessToken(getUserPrincipal(userDto)),
+                                "refresh-token", this.jwtService.generateRefreshToken(getUserPrincipal(userDto))))
+                        .message("Login success")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
-     @GetMapping("/verify/code/{email}/{code}")
+
+    @GetMapping("/verify/code/{email}/{code}")
     public ResponseEntity<HttpResponse> verify(@PathVariable("email") String email,
             @PathVariable("code") String code) throws Exception {
         UserDTO user = accountService.verify(email, code);
@@ -136,7 +142,7 @@ public class AccountController {
                                 "refresh-token",
                                 this.jwtService
                                         .generateRefreshToken(getUserPrincipal(user)),
-                                        "user",user))
+                                "user", user))
                         .message("Login success")
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
@@ -194,9 +200,9 @@ public class AccountController {
         return user;
     }
 
-   private UserPrincipal getUserPrincipal(UserDTO userDTO) throws Exception{
-    UserPrincipal userPrincipal = new UserPrincipal();
-    userPrincipal.setUser(accountService.loadUserByUsername(userDTO.getUserName()));
-    return userPrincipal;
-   }
+    private UserPrincipal getUserPrincipal(UserDTO userDTO) throws Exception {
+        UserPrincipal userPrincipal = new UserPrincipal();
+        userPrincipal.setUser(accountService.loadUserByUsername(userDTO.getUserName()));
+        return userPrincipal;
+    }
 }

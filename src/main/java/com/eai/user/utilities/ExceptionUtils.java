@@ -55,6 +55,7 @@ public class ExceptionUtils {
                 .status(status)
                 .statusCode(status.value())
                 .reason(message)
+                .message("An error occurred while attempting to access resource")
                 .timeStamp(LocalDateTime.now().toString())
                 .build();
         return httpResponse;

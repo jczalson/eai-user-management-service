@@ -71,10 +71,10 @@ public class CustomerServiceImpl implements CustomerService {
 		// 	errors.add("Email address is required");
 		// 	throw new InvalidateRequestException("Email address is required");
 		// }
-		if (StringUtils.isBlank(customerDTO.getName())) {
-			errors.add("Customer name is required");
-			throw new InvalidateRequestException("Customer name is required");
-		}
+		// if (StringUtils.isBlank(customerDTO.getName())) {
+		// 	errors.add("Customer name is required");
+		// 	throw new InvalidateRequestException("Customer name is required");
+		// }
 		CustomerEntity save = customerRepository.save(CustomerUtilities.fromDtoToCustomerEntity(customerDTO));
 		return CustomerUtilities.fromCustomerEntityToDto(save);
 	}

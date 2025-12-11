@@ -117,12 +117,12 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-	</dependencies>
-	<dependency>
+		<dependency>
 		<groupId>org.apache.commons</groupId>
 		<artifactId>commons-lang3</artifactId>
 		<version>3.19.0</version>
 	</dependency>
+	</dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

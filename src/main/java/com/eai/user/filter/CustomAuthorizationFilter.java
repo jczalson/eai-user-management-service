@@ -6,23 +6,18 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -47,7 +42,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private ApplicationContext context;
 
     private static final String[] PUBLIC_URLS = { "/account/register",
-            "/account/login", "/v3/api-docs/", "/verifications/create/", "/account/verify/",
+             "/account/login","/v3/api-docs/", "/account/verify/",
             "/swagger-ui/",
             "/swagger-ui.html", "/actuator/", "/ws/", "/url/", "/url-conf/" };
 
@@ -59,7 +54,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return request.getHeader(AUTHORIZATION) == null
                 || !request.getHeader(AUTHORIZATION).startsWith(TOKEN_PREFIX)
-                || Arrays.asList(PUBLIC_URLS).contains(request.getServletPath())
+                ||  Arrays.asList(PUBLIC_URLS).contains(request.getServletPath())
                 || request.getMethod().equalsIgnoreCase("OPTIONS");
     }
 
@@ -101,8 +96,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private String getToken(HttpServletRequest request) {
         String token = null;
-        String header = request.getHeader("Authorization");
-        if (header.startsWith(TOKEN_PREFIX)) {
+        String header = request.getHeader(AUTHORIZATION);
+        if (header !=null && header.startsWith(TOKEN_PREFIX)) {
             token = header.replace(TOKEN_PREFIX, EMPTY);
         }
         return token;

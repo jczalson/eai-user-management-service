@@ -49,13 +49,13 @@ public class UserController {
 	public ResponseEntity<HttpResponse> getAllCustomersByIdAddress(@PathVariable long id){
 		List<CustomerDTO> all = customerService.getCustomerByIdAddress(id);
 		log.info("All customers by Address Id:{}",all);
-		return ResponseEntity.created(getUri()).body(
+		return ResponseEntity.ok().body(
 		HttpResponse.builder()
 		.timeStamp(LocalDateTime.now().toString())
-		.data(Map.of("all customers", all))
+		.data(Map.of("customers", all))
 		.message("All customers by Address")
-		.status(HttpStatus.FOUND)
-		.statusCode(HttpStatus.FOUND.value())
+		.status(HttpStatus.OK)
+		.statusCode(HttpStatus.OK.value())
 	    .build());
 	}
 

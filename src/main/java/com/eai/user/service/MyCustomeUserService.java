@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.eai.user.dto.UserDTO;
 import com.eai.user.entities.AppUser;
+import com.eai.user.entities.UserPrincipal;
 import com.eai.user.repository.AppUserRepository;
 import com.eai.user.utilities.AccountUtilities;
 
@@ -34,9 +35,7 @@ public class MyCustomeUserService implements UserDetailsService{
       throw new UsernameNotFoundException("User not found");
      }
      UserDTO userDto = AccountUtilities.fromUserEntityToDto(userOp.get());
-         Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(userDto.getRolesOfUser().stream().map(r->r.toString()).collect(Collectors.joining(","))));
-        UserDetails user = new User(userDto.getUserName(),userDto.getPassword(), authorities);
-      return user;
+        return new UserPrincipal(userDto);
     }
 
 }

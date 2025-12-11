@@ -10,10 +10,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.eai.user.dto.UserDTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Data
 public class UserPrincipal implements UserDetails {
     private UserDTO user;
@@ -21,7 +23,7 @@ public class UserPrincipal implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(
-                user.getRolesOfUser().stream().map(r -> r.toString()).collect(Collectors.joining(","))));
+                user.getRolesOfUser().stream().map(String::new).collect(Collectors.joining(","))));
         return authorities;
     }
 

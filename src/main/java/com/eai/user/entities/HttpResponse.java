@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @AllArgsConstructor
 @SuperBuilder
-// @JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT)
+@JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT)
 public class HttpResponse {
 
     private String message;

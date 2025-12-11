@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import com.eai.user.dto.UserDTO;
 import com.eai.user.entities.UserPrincipal;
+import com.eai.user.exception.InvalidateRequestException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -41,6 +42,9 @@ public class JWTService {
 
     @Autowired
     private JwtDecoder jwtDecoder;
+
+     @Autowired
+    private AccountService accountService;
 
     public String generateAccessToken(UserPrincipal user) {
         Instant instant = Instant.now();
@@ -62,10 +66,13 @@ public class JWTService {
     public String extractUserNameFromToken(String token) {
         String userName = null;
         try {
+            if(token !=null){
             Jwt jwt = jwtDecoder.decode(token);
             userName = jwt.getSubject();
+            }
         } catch (JwtException e) {
             logger.error("Error occured for JWT decoder maybe the token is expired {}", e.getLocalizedMessage());
+        throw new InvalidateRequestException(e.getMessage());
         }
         return userName;
     }
@@ -83,7 +90,8 @@ public class JWTService {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-        String userName = extractUserNameFromToken(token);
+         
+        String userName = token !=null? extractUserNameFromToken(token): null;
         if (userName != null && userName.equals(userDetails.getUsername())) {
             return true;
         }
@@ -107,8 +115,8 @@ public class JWTService {
         return token;
     }
 
-    public Authentication getAuthentication(String email, List<GrantedAuthority> authorities, HttpServletRequest request){
-     UsernamePasswordAuthenticationToken userToken= new UsernamePasswordAuthenticationToken(email, null, authorities);
+    public Authentication getAuthentication(String email, List<GrantedAuthority> authorities, HttpServletRequest request) throws Exception{
+     UsernamePasswordAuthenticationToken userToken= new UsernamePasswordAuthenticationToken(accountService.loadUserByUsername(email), null, authorities);
     userToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
      return userToken;
     }
