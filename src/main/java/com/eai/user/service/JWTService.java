@@ -85,7 +85,6 @@ public class JWTService {
     }
 
     public boolean validateToken(String token, AppUser user) {
-         
         Long userId = token !=null? extractUserIdFromToken(token): null;
         if (userId != null && userId.equals(new Long(user.getIdUser()))) {
             return true;
@@ -94,7 +93,6 @@ public class JWTService {
     }
 
     public String generateRefreshToken(UserPrincipal user) {
-        
         String roles = user.getAuthorities().stream().map(role->role.toString()).collect(Collectors.joining(","));
         Instant instant = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()

@@ -40,7 +40,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private AppUserRepository appUserRepository;
 
     private static final String[] PUBLIC_URLS = { "/account/register",
-             "/account/login","/v3/api-docs/", "/account/verify/",
+            "/account/login", "/v3/api-docs/", "/account/verify/",
             "/swagger-ui/",
             "/swagger-ui.html", "/actuator/", "/ws/", "/url/", "/url-conf/" };
 
@@ -50,17 +50,17 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return request.getHeader(AUTHORIZATION) == null
                 || !request.getHeader(AUTHORIZATION).startsWith(TOKEN_PREFIX)
-                ||  Arrays.asList(PUBLIC_URLS).contains(request.getServletPath())
+                || Arrays.asList(PUBLIC_URLS).contains(request.getServletPath())
                 || request.getMethod().equalsIgnoreCase("OPTIONS");
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException{
+            throws ServletException, IOException {
         try {
             String token = getToken(request);
-          Long userId =  jwtService.extractUserIdFromToken(getToken(request));
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            Long userId = jwtService.extractUserIdFromToken(getToken(request));
+            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 AppUser user = appUserRepository.findById(userId).get();
                 if (jwtService.validateToken(token, user)) {
                     String[] roles = jwtService.extractAuthoritiesFromToken(token).split(",");
@@ -87,7 +87,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private String getToken(HttpServletRequest request) {
         String token = null;
         String header = request.getHeader(AUTHORIZATION);
-        if (header !=null && header.startsWith(TOKEN_PREFIX)) {
+        if (header != null && header.startsWith(TOKEN_PREFIX)) {
             token = header.replace(TOKEN_PREFIX, EMPTY);
         }
         return token;
