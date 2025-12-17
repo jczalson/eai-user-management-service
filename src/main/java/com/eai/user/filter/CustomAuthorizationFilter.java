@@ -7,24 +7,20 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.eai.user.entities.AppUser;
 import com.eai.user.repository.AppUserRepository;
 import com.eai.user.service.JWTService;
-import com.eai.user.service.MyCustomeUserService;
 import com.eai.user.utilities.ExceptionUtils;
 
 import jakarta.servlet.FilterChain;
@@ -49,8 +45,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             "/swagger-ui.html", "/actuator/", "/ws/", "/url/", "/url-conf/" };
 
     protected static final String TOKEN_PREFIX = "Bearer ";
-    protected static final String TOKEN_KEY = "token";
-    protected static final String USERID_KEY = "userid";
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -64,15 +58,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException{
         try {
-            Map<String, String> values = getRequestValues(request);
             String token = getToken(request);
-            if (values.get(USERID_KEY) != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                AppUser user = appUserRepository.findById(Long.valueOf(values.get(USERID_KEY))).get();
+          Long userId =  jwtService.extractUserIdFromToken(getToken(request));
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                AppUser user = appUserRepository.findById(userId).get();
                 if (jwtService.validateToken(token, user)) {
-                    String[] roles = jwtService.extractAuthoritiesFromToken(values.get(TOKEN_KEY)).split(",");
+                    String[] roles = jwtService.extractAuthoritiesFromToken(token).split(",");
                     List<GrantedAuthority> authorities = stream(roles).map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toList());
-                    Authentication authentication = jwtService.getAuthentication(Long.valueOf(values.get(USERID_KEY)), authorities,
+                    Authentication authentication = jwtService.getAuthentication(user.getIdUser(), authorities,
                             request);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
@@ -88,11 +82,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 e1.printStackTrace();
             }
         }
-    }
-
-    private Map<String,String> getRequestValues(HttpServletRequest request) {
-        return Map.of(USERID_KEY, String.valueOf(jwtService.extractUserIdFromToken(getToken(request))), TOKEN_KEY,
-                getToken(request));
     }
 
     private String getToken(HttpServletRequest request) {
