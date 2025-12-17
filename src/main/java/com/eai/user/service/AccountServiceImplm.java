@@ -203,4 +203,9 @@ public class AccountServiceImplm implements AccountService {
         log.info("Verification code: " + verificationCode.getCode());
     }
 
+    @Override
+    public UserDTO getUserById(Long userId) {
+      return  AccountUtilities.fromUserEntityToDto(appUserRepository.findById(userId).get());
+    }
+
 }

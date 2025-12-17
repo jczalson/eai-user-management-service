@@ -21,6 +21,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.eai.user.entities.AppUser;
+import com.eai.user.repository.AppUserRepository;
 import com.eai.user.service.JWTService;
 import com.eai.user.service.MyCustomeUserService;
 import com.eai.user.utilities.ExceptionUtils;
@@ -39,7 +41,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private JWTService jwtService;
 
     @Autowired
-    private ApplicationContext context;
+    private AppUserRepository appUserRepository;
 
     private static final String[] PUBLIC_URLS = { "/account/register",
              "/account/login","/v3/api-docs/", "/account/verify/",
@@ -48,7 +50,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     protected static final String TOKEN_PREFIX = "Bearer ";
     protected static final String TOKEN_KEY = "token";
-    protected static final String USERNAME_KEY = "username";
+    protected static final String USERID_KEY = "userid";
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -64,14 +66,13 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         try {
             Map<String, String> values = getRequestValues(request);
             String token = getToken(request);
-            if (values.get(USERNAME_KEY) != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = context.getBean(MyCustomeUserService.class)
-                        .loadUserByUsername(values.get(USERNAME_KEY));
-                if (jwtService.validateToken(token, userDetails)) {
+            if (values.get(USERID_KEY) != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                AppUser user = appUserRepository.findById(Long.valueOf(values.get(USERID_KEY))).get();
+                if (jwtService.validateToken(token, user)) {
                     String[] roles = jwtService.extractAuthoritiesFromToken(values.get(TOKEN_KEY)).split(",");
                     List<GrantedAuthority> authorities = stream(roles).map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toList());
-                    Authentication authentication = jwtService.getAuthentication(values.get(USERNAME_KEY), authorities,
+                    Authentication authentication = jwtService.getAuthentication(Long.valueOf(values.get(USERID_KEY)), authorities,
                             request);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
@@ -89,8 +90,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         }
     }
 
-    private Map<String, String> getRequestValues(HttpServletRequest request) {
-        return Map.of(USERNAME_KEY, jwtService.extractUserNameFromToken(getToken(request)), TOKEN_KEY,
+    private Map<String,String> getRequestValues(HttpServletRequest request) {
+        return Map.of(USERID_KEY, String.valueOf(jwtService.extractUserIdFromToken(getToken(request))), TOKEN_KEY,
                 getToken(request));
     }
 

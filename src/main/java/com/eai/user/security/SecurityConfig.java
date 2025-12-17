@@ -66,7 +66,7 @@ public class SecurityConfig {
     private static final String [] PUBLIC_URLS = {"/account/register",
                    "/account/login","/v3/api-docs/**",
                    "/swagger-ui/**","/account/verify/code/**",
-                    "/swagger-ui.html", "/actuator/**","/ws/**","/url/**","/url-conf/**"};
+                    "/swagger-ui.html", "/actuator/**","/ws/**","/ws/info/**","/url/**","/url-conf/**"};
 
                     // private static final String [] PUBLIC_URLS = {"/**"};
 
@@ -79,7 +79,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request.anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(op -> op.disable()))
                 .cors(cors -> cors.configurationSource(configurerCorsConfigurer()))
-                .oauth2ResourceServer(oaut ->oaut.jwt(Customizer.withDefaults())) 
+                // .oauth2ResourceServer(oaut ->oaut.jwt(Customizer.withDefaults())) 
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception -> 
                    exception.accessDeniedHandler(accessDeniedHandler)

@@ -2,11 +2,7 @@ package com.eai.user.service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -15,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -27,7 +22,7 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
-import com.eai.user.dto.UserDTO;
+import com.eai.user.entities.AppUser;
 import com.eai.user.entities.UserPrincipal;
 import com.eai.user.exception.InvalidateRequestException;
 
@@ -53,7 +48,7 @@ public class JWTService {
                 .issuedAt(instant)
                 .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
                 .issuer("http://localhost:9008/eai/api/user-management/")
-                .subject(user.getUsername())
+                .subject(String.valueOf(user.getUser().getIdUser()))
                 .claim("scope", roles)
                 .build();
         JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters
@@ -63,18 +58,18 @@ public class JWTService {
         return token;
     }
 
-    public String extractUserNameFromToken(String token) {
-        String userName = null;
+    public Long extractUserIdFromToken(String token) {
+        Long userId = null;
         try {
             if(token !=null){
             Jwt jwt = jwtDecoder.decode(token);
-            userName = jwt.getSubject();
+            userId = Long.parseLong(jwt.getSubject());
             }
         } catch (JwtException e) {
             logger.error("Error occured for JWT decoder maybe the token is expired {}", e.getLocalizedMessage());
         throw new InvalidateRequestException(e.getMessage());
         }
-        return userName;
+        return userId;
     }
 
     public String extractAuthoritiesFromToken(String token) {
@@ -89,10 +84,10 @@ public class JWTService {
         return autorities;
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token, AppUser user) {
          
-        String userName = token !=null? extractUserNameFromToken(token): null;
-        if (userName != null && userName.equals(userDetails.getUsername())) {
+        Long userId = token !=null? extractUserIdFromToken(token): null;
+        if (userId != null && userId.equals(new Long(user.getIdUser()))) {
             return true;
         }
         return false;
@@ -106,7 +101,7 @@ public class JWTService {
                 .issuedAt(instant)
                 .expiresAt(instant.plus(120, ChronoUnit.MINUTES))
                 .issuer("http://localhost:9008/eai/api/user-management/")
-                .subject(user.getUsername())
+                .subject(String.valueOf(user.getUser().getIdUser()))
                 .claim("scope", roles)
                 .build();
         JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters
@@ -115,8 +110,8 @@ public class JWTService {
         return token;
     }
 
-    public Authentication getAuthentication(String email, List<GrantedAuthority> authorities, HttpServletRequest request) throws Exception{
-     UsernamePasswordAuthenticationToken userToken= new UsernamePasswordAuthenticationToken(accountService.loadUserByUsername(email), null, authorities);
+    public Authentication getAuthentication(Long userId, List<GrantedAuthority> authorities, HttpServletRequest request) throws Exception{
+     UsernamePasswordAuthenticationToken userToken= new UsernamePasswordAuthenticationToken(accountService.getUserById(userId), null, authorities);
     userToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
      return userToken;
     }

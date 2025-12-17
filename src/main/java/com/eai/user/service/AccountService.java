@@ -33,4 +33,6 @@ public interface AccountService {
     public UserDTO verify(String email, String code);
 
     public void sendVerificationCode(UserDTO user);
+
+    public UserDTO getUserById(Long userId);
 }

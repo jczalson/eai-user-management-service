@@ -31,10 +31,10 @@ import com.eai.user.entities.AppRole;
 import com.eai.user.entities.HttpResponse;
 import com.eai.user.entities.UserPrincipal;
 import com.eai.user.entities.UserStatusEnum;
-import com.eai.user.exception.InvalidateRequestException;
 import com.eai.user.service.AccountService;
 import com.eai.user.service.JWTService;
 import com.eai.user.service.UserConfigurationService;
+import com.eai.user.utilities.UserUtils;
 
 @RestController
 @RequestMapping(path = "account/")
@@ -90,13 +90,11 @@ public class AccountController {
     public ResponseEntity<HttpResponse> login(@RequestBody LoginDTO login) throws Exception {
         // HandleException is built for all excptions
             Authentication authenication = authenticate(login);
-            UserDTO userDto = getAuthenticatedUser(authenication);
+            UserDTO userDto = UserUtils.getLoggedIndUser(authenication);
             return userDto.getIsMfa().booleanValue() ? sendVerificationCode(userDto) : sendResponse(userDto);
     }
 
-    private UserDTO getAuthenticatedUser(Authentication authenication) {
-        return ((UserPrincipal) authenication.getPrincipal()).getUser();
-    }
+  
 
     private Authentication authenticate(LoginDTO login) {
         Authentication authentication;
@@ -149,9 +147,9 @@ public class AccountController {
                         .build());
     }
 
-    @GetMapping("/verify/profile")
+    @GetMapping("/user/profile")
     public ResponseEntity<HttpResponse> profile(Authentication authentication) throws Exception {
-        UserDTO user = accountService.loadUserByUsername(authentication.getName());
+        UserDTO user = accountService.loadUserByUsername(UserUtils.getAuthenticatedUser(authentication).getUserName());
         return ResponseEntity.ok().body(
                 HttpResponse.builder()
                         .timeStamp(LocalDateTime.now().toString())
