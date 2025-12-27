@@ -91,7 +91,7 @@ public class UserActivityConsumerTest {
         assertNotNull(userDtoArgumentCaptor);
         UserDTO userDTO = userDtoArgumentCaptor.getValue();
         assertEquals("kooo", userDTO.getName());
-        assertEquals("koko@mail.com", userDTO.getUserName());
+        assertEquals("koko@mail.com", userDTO.getEmail());
     }
 
     private String readFile(String filePath) {

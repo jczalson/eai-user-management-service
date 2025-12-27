@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -171,7 +173,7 @@ public class AccountServiceImplm implements AccountService {
             UserDTO userCode = userFromFactorVerificationByCode.getUser();
             if (userFromFactorVerificationByCode != null && userFromFactorVerificationByCode != null
                     && userFromFactorVerificationByCode.getUser() != null) {
-                if (userCode.getUserName().equalsIgnoreCase(userEmail.getUserName())) {
+                if (userCode.getEmail().equalsIgnoreCase(userEmail.getEmail())) {
                     twoFactorVerificationsService.deleteCode(userFromFactorVerificationByCode);
                     return userEmail;
                 } else {
@@ -206,6 +208,46 @@ public class AccountServiceImplm implements AccountService {
     @Override
     public UserDTO getUserById(Long userId) {
       return  AccountUtilities.fromUserEntityToDto(appUserRepository.findById(userId).get());
+    }
+
+    @Override
+    public UserDTO updateUser(UserDTO userDTO) {
+        if(userDTO !=null){
+            if(StringUtils.isBlank(String.valueOf(userDTO.getIdUser()))){
+                throw new InvalidateRequestException("UserId cannot be null");
+            }
+             if(StringUtils.isBlank(userDTO.getEmail())){
+                throw new InvalidateRequestException("Email cannot be null");
+            }
+             if(StringUtils.isBlank(userDTO.getName())){
+                throw new InvalidateRequestException("UserId cannot be null");
+            }
+     UserDTO dto =  fromExistedToUpdatedOne(getUserById(userDTO.getIdUser()), userDTO);
+     return AccountUtilities.fromUserEntityToDto(appUserRepository.save(AccountUtilities.fromUserDtoToEntity(dto)));
+        }
+        return null;
+    }
+
+    private UserDTO fromExistedToUpdatedOne(UserDTO existedUserDto, UserDTO userDto) {
+        if(StringUtils.isNotBlank(userDto.getPassword()))
+        existedUserDto.setPassword(userDto.getPassword());
+
+        if(userDto.getStatusEnum() !=null)
+        existedUserDto.setStatusEnum(userDto.getStatusEnum());
+
+        if(StringUtils.isNotBlank(userDto.getEmail()))
+        existedUserDto.setEmail(userDto.getEmail());
+
+        if(StringUtils.isNotBlank(userDto.getName()))
+        existedUserDto.setName(userDto.getName());
+
+        if (StringUtils.isNotBlank(userDto.getPhoto())) {
+            existedUserDto.setPhoto(userDto.getPhoto());
+        }
+        if(userDto.getIsMfa() !=null)
+        existedUserDto.setIsMfa(userDto.getIsMfa());
+        // BeanUtils.copyProperties(userDto, existedUserDto);
+        return existedUserDto;
     }
 
 }

@@ -25,7 +25,7 @@ public class UserActivityConsumer {
     public void consumeUserActivity(UserDTO userDTO){
         logger.info("User DTO consumed {}",userDTO);
 
-        if(userDTO.getUserName() != null){
+        if(userDTO.getEmail() != null){
            messagingTemplate.convertAndSend(userActivityStompTopic, userDTO);
         logger.info("End: Message processed by UserDTO stomp consumer: {}", userDTO);
         }

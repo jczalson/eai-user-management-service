@@ -19,7 +19,7 @@ public class AccountUtilities {
         dto.setIdUser(user.getIdUser());
         dto.setPassword(user.getPassword());
         dto.setStatusEnum(user.getUserStatusEnum());
-        dto.setUserName(user.getEmail());
+        dto.setEmail(user.getEmail());
         dto.setName(user.getName());
         dto.setIsMfa(user.getIsMfa());
         if (StringUtils.isNotBlank(user.getPhoto())) {
@@ -41,13 +41,25 @@ public class AccountUtilities {
     public static AppUser fromUserDtoToEntity(UserDTO userDto) {
         AppUser entity = new AppUser();
         entity.setIdUser(userDto.getIdUser());
+
+        if(StringUtils.isNotBlank(userDto.getPassword()))
         entity.setPassword(userDto.getPassword());
+
+        if(userDto.getStatusEnum() !=null)
         entity.setUserStatusEnum(userDto.getStatusEnum());
-        entity.setEmail(userDto.getUserName());
+
+        if(StringUtils.isNotBlank(userDto.getEmail()))
+        entity.setEmail(userDto.getEmail());
+
+        if(StringUtils.isNotBlank(userDto.getName()))
+        entity.setName(userDto.getName());
+
         if (StringUtils.isNotBlank(userDto.getPhoto())) {
             entity.setPhoto(userDto.getPhoto());
         }
+        if(userDto.getIsMfa() != null)
         entity.setIsMfa(userDto.getIsMfa());
+    
         BeanUtils.copyProperties(userDto, entity);
         return entity;
     }

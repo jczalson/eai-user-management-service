@@ -38,7 +38,7 @@ public class TwoFactorVerificationsImpl implements TwoFactorVerificationsService
         Optional<TwoFactorVerificationsEntity> tfvc = factorVerificationsRepository.findUserByCodeVerification(code);
         if (tfvc.isPresent()) {
             BeanUtils.copyProperties(tfvc.get().getUser(), dto.getUser());
-            dto.getUser().setUserName(tfvc.get().getUser().getEmail());
+            dto.getUser().setEmail(tfvc.get().getUser().getEmail());
             BeanUtils.copyProperties(tfvc.get(), dto);
             dto.setExpiryDate(new Timestamp(tfvc.get().getExpiryDate().getTime()).toLocalDateTime());
         }

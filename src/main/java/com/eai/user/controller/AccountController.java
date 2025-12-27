@@ -4,6 +4,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,8 +15,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,18 +63,33 @@ public class AccountController {
         return accountService.addRole(appRole);
     }
 
+    @PatchMapping("/update")
+    public ResponseEntity<HttpResponse> updateUser(@RequestBody UserDTO userDTO) throws InterruptedException {
+        TimeUnit.SECONDS.sleep(3);
+        UserDTO user = accountService.updateUser(userDTO);
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .data(Map.of("user", user))
+                        .message("User updated")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
+    }
+
     @PostMapping(path = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     // @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<HttpResponse> saveUser(@RequestParam MultipartFile file, String email, String name,
             String password,
             UserStatusEnum status) throws Exception {
+        TimeUnit.SECONDS.sleep(3);
         UserDTOInput userInput = new UserDTOInput();
         userInput.setEmail(email);
         userInput.setPassword(password);
         userInput.setStatusEnum(status);
         userInput.setName(name);
         accountService.addUser(file, userInput);
-        return ResponseEntity.created(getUri()).body(
+        return ResponseEntity.ok().body(
                 HttpResponse.builder()
                         .timeStamp(LocalDateTime.now().toString())
                         .data(Map.of("user", accountService.addUser(file, userInput)))
@@ -81,20 +99,18 @@ public class AccountController {
                         .build());
     }
 
-    private URI getUri() {
-        return URI.create(
-                ServletUriComponentsBuilder.fromCurrentContextPath().path("account/get/<idUser>").toUriString());
-    }
+    // private URI getUri() {
+    // return URI.create(
+    // ServletUriComponentsBuilder.fromCurrentContextPath().path("account/get/<idUser>").toUriString());
+    // }
 
     @PostMapping("/login")
     public ResponseEntity<HttpResponse> login(@RequestBody LoginDTO login) throws Exception {
         // HandleException is built for all excptions
-            Authentication authenication = authenticate(login);
-            UserDTO userDto = UserUtils.getLoggedIndUser(authenication);
-            return userDto.getIsMfa().booleanValue() ? sendVerificationCode(userDto) : sendResponse(userDto);
+        Authentication authenication = authenticate(login);
+        UserDTO userDto = UserUtils.getLoggedIndUser(authenication);
+        return userDto.getIsMfa().booleanValue() ? sendVerificationCode(userDto) : sendResponse(userDto);
     }
-
-  
 
     private Authentication authenticate(LoginDTO login) {
         Authentication authentication;
@@ -149,11 +165,11 @@ public class AccountController {
 
     @GetMapping("/user/profile")
     public ResponseEntity<HttpResponse> profile(Authentication authentication) throws Exception {
-        UserDTO user = accountService.loadUserByUsername(UserUtils.getAuthenticatedUser(authentication).getUserName());
+        UserDTO user = accountService.loadUserByUsername(UserUtils.getAuthenticatedUser(authentication).getEmail());
         return ResponseEntity.ok().body(
                 HttpResponse.builder()
                         .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("user", user))
+                        .data(Map.of("profile", user))
                         .message("Profile retrieved")
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
@@ -200,7 +216,7 @@ public class AccountController {
 
     private UserPrincipal getUserPrincipal(UserDTO userDTO) throws Exception {
         UserPrincipal userPrincipal = new UserPrincipal();
-        userPrincipal.setUser(accountService.loadUserByUsername(userDTO.getUserName()));
+        userPrincipal.setUser(accountService.loadUserByUsername(userDTO.getEmail()));
         return userPrincipal;
     }
 }

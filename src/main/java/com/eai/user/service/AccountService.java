@@ -35,4 +35,6 @@ public interface AccountService {
     public void sendVerificationCode(UserDTO user);
 
     public UserDTO getUserById(Long userId);
+
+    public UserDTO updateUser(UserDTO userDTO);
 }

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,14 +79,15 @@ public class UserController {
 	  authentication) { return authentication; }
 	 
 	@PostMapping("/createUser")
-	  public ResponseEntity<HttpResponse> createUser(@RequestBody CustomerDTO customerDTO){
-      CustomerDTO customerDTO2 = customerService.savCustomerDTO(customerDTO);
+	  public ResponseEntity<HttpResponse> createUser(@RequestBody CustomerDTO customerDTO) throws Exception{
+     TimeUnit.SECONDS.sleep(3);
+		CustomerDTO customerDTO2 = customerService.savCustomerDTO(customerDTO);
 	  log.info("customer:{}",customerDTO2);
 	  return ResponseEntity.ok().body(
 		HttpResponse.builder()
 		.timeStamp(LocalDateTime.now().toString())
 		.data(Map.of("user", customerDTO2))
-		.message("User created")
+		.message("customer created")
 		.status(HttpStatus.CREATED)
 		.statusCode(HttpStatus.CREATED.value())
 	    .build());

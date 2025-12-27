@@ -39,6 +39,6 @@ public class AccountServiceTest {
         when(repository.findUserByEmailAndStatus("jc@mail.com")).thenReturn(Optional.of(user));
         UserDTO dto = accountService.loadUserByUsername(user.getEmail());
         assertNotNull(dto);
-        assertEquals(dto.getUserName(), user.getEmail());
+        assertEquals(dto.getEmail(), user.getEmail());
     }
 }

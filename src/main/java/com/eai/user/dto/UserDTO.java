@@ -8,7 +8,6 @@ import com.eai.user.entities.UserStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,7 +22,7 @@ public class UserDTO implements Serializable {
 
     private Long idUser;
 
-    private String userName;
+    private String email;
 
     private String name;
 
