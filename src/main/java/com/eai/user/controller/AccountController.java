@@ -1,6 +1,5 @@
 package com.eai.user.controller;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +17,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.eai.user.dto.LoginDTO;
 import com.eai.user.dto.UserDTO;
@@ -39,9 +36,15 @@ import com.eai.user.service.JWTService;
 import com.eai.user.service.UserConfigurationService;
 import com.eai.user.utilities.UserUtils;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping(path = "account/")
 public class AccountController {
+
+    private static final String TOKEN_PREFIX = "Bearer ";
 
     @Autowired
     private AccountService accountService;
@@ -112,6 +115,37 @@ public class AccountController {
         return userDto.getIsMfa().booleanValue() ? sendVerificationCode(userDto) : sendResponse(userDto);
     }
 
+    @GetMapping("/refresh/token")
+    public ResponseEntity<HttpResponse> refreshToken(HttpServletRequest request) throws Exception{
+       if(isHeaderTokenValidated(request)){
+        String refreshToken = request.getHeader(AUTHORIZATION).substring(TOKEN_PREFIX.length());
+       UserDTO userDTO = accountService.getUserById(jwtService.extractUserIdFromToken(refreshToken));
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .data(Map.of("user", userDTO,"access-token", jwtService.generateAccessToken(getUserPrincipal(userDTO)),
+                                "refresh-token", refreshToken))
+                        .message("Token refreshed with success")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
+        }else{
+          return ResponseEntity.badRequest().body(
+                HttpResponse.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .reason("Refresh token is missing or invalid")
+                        .developerMessage("Refresh token is missing or invalid")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .statusCode(HttpStatus.BAD_REQUEST.value())
+                        .build());  
+        }
+    }
+
+    private boolean isHeaderTokenValidated(HttpServletRequest request){
+        return request.getHeader(AUTHORIZATION) != null && 
+               request.getHeader(AUTHORIZATION).startsWith(TOKEN_PREFIX) &&
+               jwtService.validateToken(request.getHeader(AUTHORIZATION).substring(TOKEN_PREFIX.length()), accountService.getUserById(jwtService.extractUserIdFromToken(request.getHeader(AUTHORIZATION).substring(TOKEN_PREFIX.length()))));
+    }
     private Authentication authenticate(LoginDTO login) {
         Authentication authentication;
         authentication = authenticationManager

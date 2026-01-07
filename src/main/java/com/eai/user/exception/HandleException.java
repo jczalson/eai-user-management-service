@@ -14,8 +14,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -24,8 +24,12 @@ import com.eai.user.entities.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class HandleException extends ResponseEntityExceptionHandler implements ErrorController{
+
+    private static final String EXPIRED = "expired";
+    private static final String SESSION_IS_EXPIRED = "Your session is expired, please log in again";
+
 
     @Override
     @Nullable
@@ -74,6 +78,20 @@ public class HandleException extends ResponseEntityExceptionHandler implements E
                 .timeStamp(LocalDateTime.now().toString())
                 .build(),HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> exception(Exception exception) {
+       log.error(exception.getMessage());
+        return new ResponseEntity<>(
+         HttpResponse.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .reason(exception.getMessage().contains(EXPIRED)?SESSION_IS_EXPIRED:exception.getMessage())
+                .developerMessage(exception.getMessage().contains(EXPIRED)?SESSION_IS_EXPIRED:exception.getMessage())
+                .timeStamp(LocalDateTime.now().toString())
+                .build(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Object> badCredentialsException(BadCredentialsException exception) {

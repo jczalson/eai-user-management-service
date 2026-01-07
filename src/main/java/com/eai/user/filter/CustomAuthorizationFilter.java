@@ -18,10 +18,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.eai.user.dto.UserDTO;
 import com.eai.user.entities.AppUser;
+import com.eai.user.exception.ExceptionUtils;
 import com.eai.user.repository.AppUserRepository;
 import com.eai.user.service.JWTService;
-import com.eai.user.utilities.ExceptionUtils;
+import com.eai.user.utilities.AccountUtilities;
+import com.eai.user.utilities.UserUtils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,8 +42,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private AppUserRepository appUserRepository;
 
+    /**
+     * /account/refresh/token is whitelisted because 
+     * don't need to be filtererd as it doesn't have authorities
+     */
     private static final String[] PUBLIC_URLS = { "/account/register",
-            "/account/login", "/v3/api-docs/", "/account/verify/",
+            "/account/login", "/v3/api-docs/", "/account/verify/","/account/refresh/token",
             "/swagger-ui/",
             "/swagger-ui.html", "/actuator/", "/ws/", "/url/", "/url-conf/" };
 
@@ -61,7 +68,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             String token = getToken(request);
             Long userId = jwtService.extractUserIdFromToken(getToken(request));
             if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                AppUser user = appUserRepository.findById(userId).get();
+                UserDTO user = AccountUtilities.fromUserEntityToDto(appUserRepository.findById(userId).get());
                 if (jwtService.validateToken(token, user)) {
                     String[] roles = jwtService.extractAuthoritiesFromToken(token).split(",");
                     List<GrantedAuthority> authorities = stream(roles).map(SimpleGrantedAuthority::new)

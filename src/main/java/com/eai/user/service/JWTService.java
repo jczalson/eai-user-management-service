@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
+import com.eai.user.dto.UserDTO;
 import com.eai.user.entities.AppUser;
 import com.eai.user.entities.UserPrincipal;
 import com.eai.user.exception.InvalidateRequestException;
@@ -46,7 +47,7 @@ public class JWTService {
         String roles = user.getAuthorities().stream().map(role -> role.toString()).collect(Collectors.joining(","));
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(instant)
-                .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
+                .expiresAt(instant.plus(1, ChronoUnit.MINUTES))
                 .issuer("http://localhost:9008/eai/api/user-management/")
                 .subject(String.valueOf(user.getUser().getIdUser()))
                 .claim("scope", roles)
@@ -67,7 +68,7 @@ public class JWTService {
             }
         } catch (JwtException e) {
             logger.error("Error occured for JWT decoder maybe the token is expired {}", e.getLocalizedMessage());
-        throw new InvalidateRequestException(e.getMessage());
+        throw new JwtException(e.getMessage());
         }
         return userId;
     }
@@ -84,7 +85,7 @@ public class JWTService {
         return autorities;
     }
 
-    public boolean validateToken(String token, AppUser user) {
+    public boolean validateToken(String token, UserDTO user) {
         Long userId = token !=null? extractUserIdFromToken(token): null;
         if (userId != null && userId.equals(new Long(user.getIdUser()))) {
             return true;
@@ -93,14 +94,13 @@ public class JWTService {
     }
 
     public String generateRefreshToken(UserPrincipal user) {
-        String roles = user.getAuthorities().stream().map(role->role.toString()).collect(Collectors.joining(","));
         Instant instant = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(instant)
-                .expiresAt(instant.plus(120, ChronoUnit.MINUTES))
+                .expiresAt(instant.plus(4, ChronoUnit.MINUTES))
                 .issuer("http://localhost:9008/eai/api/user-management/")
                 .subject(String.valueOf(user.getUser().getIdUser()))
-                .claim("scope", roles)
+                .claim("scope", "No need for refresh token")
                 .build();
         JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters
                 .from(JwsHeader.with(MacAlgorithm.HS256).build(), claims);

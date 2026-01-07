@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -63,10 +62,16 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthorizationFilter customAuthorizationFilter;
 
+    /**
+     * /account/refresh/token/ is whitelisted because 
+     * don't need to be filtererd as it doesn't have authorities
+     */
     private static final String [] PUBLIC_URLS = {"/account/register",
                    "/account/login","/v3/api-docs/**",
                    "/swagger-ui/**","/account/verify/code/**",
-                    "/swagger-ui.html", "/actuator/**","/ws/**","/ws/info/**","/url/**","/url-conf/**"};
+                    "/swagger-ui.html", "/actuator/**",
+                    "/ws/**","/ws/info/**",
+                    "/url/**","/url-conf/**","account/refresh/token/**"};
 
                     // private static final String [] PUBLIC_URLS = {"/**"};
 

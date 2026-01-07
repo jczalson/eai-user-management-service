@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.eai.user.dto.AddressDTO;
 import com.eai.user.dto.CustomerDTO;
 import com.eai.user.entities.CustomerEntity;
-import com.eai.user.exception.InvalidateRequestException;
 import com.eai.user.repository.AddressRepository;
 import com.eai.user.repository.CustomerRepository;
 import com.eai.user.utilities.CustomerUtilities;

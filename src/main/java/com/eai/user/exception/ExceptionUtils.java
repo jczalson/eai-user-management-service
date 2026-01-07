@@ -1,4 +1,4 @@
-package com.eai.user.utilities;
+package com.eai.user.exception;
 
 import java.io.OutputStream;
 import java.time.LocalDateTime;
@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.oauth2.jwt.JwtException;
 
 import com.eai.user.entities.HttpResponse;
-import com.eai.user.exception.InvalidateRequestException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,14 +21,17 @@ public class ExceptionUtils {
 
     public static void processError(HttpServletRequest request, HttpServletResponse response, Exception exception)
             throws Exception {
-        if (exception instanceof InvalidateRequestException
-                || exception instanceof AccessDeniedException
+        if (exception instanceof AccessDeniedException
                 || exception instanceof BadCredentialsException) {
             HttpResponse httpResponse = getHttpResponse(response, exception.getMessage(), HttpStatus.BAD_REQUEST);
             writeResponse(httpResponse, response);
-        }else{
-         HttpResponse httpResponse = getHttpResponse(response, "An error occurred. Please try again", HttpStatus.INTERNAL_SERVER_ERROR);
-            writeResponse(httpResponse, response);   
+        } else if (exception instanceof JwtException) {
+            HttpResponse httpResponse = getHttpResponse(response, exception.getMessage(), HttpStatus.UNAUTHORIZED);
+            writeResponse(httpResponse, response);
+        } else {
+            HttpResponse httpResponse = getHttpResponse(response, "An error occurred. Please try again",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+            writeResponse(httpResponse, response);
         }
         log.error(exception.getMessage());
     }
