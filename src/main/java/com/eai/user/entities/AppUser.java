@@ -6,8 +6,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -54,6 +56,6 @@ public class AppUser implements Serializable {
     // @JoinTable(name = "APP_USER_ROLE",
     // joinColumns = @JoinColumn(name = "ID_USER"),
     // inverseJoinColumns = @JoinColumn(name = "ID_ROLE"))
-    @OneToMany(mappedBy = "appUser")
+    @OneToMany(mappedBy = "appUser",fetch = FetchType.EAGER)
     private List<AppUserRole> userRoleList = new ArrayList<>();
 }
