@@ -74,7 +74,8 @@ public class AccountUtilities {
         if (StringUtils.isNotBlank(inputUser.getPhoto())) {
             entity.setPhoto(inputUser.getPhoto());
         }
- BeanUtils.copyProperties(inputUser, entity);
+        entity.setIsMfa(inputUser.isMfa());
+//  BeanUtils.copyProperties(inputUser, entity);
         return entity;
     }
 }

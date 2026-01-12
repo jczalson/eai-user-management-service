@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -68,6 +69,19 @@ public class HandleException extends ResponseEntityExceptionHandler implements E
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<Object> sQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException exception) {
+       log.error(exception.getMessage());
+        return new ResponseEntity<>(
+         HttpResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .reason(exception.getMessage())
+                .developerMessage(exception.getMessage())
+                .timeStamp(LocalDateTime.now().toString())
+                .build(),HttpStatus.BAD_REQUEST);
+    }
+
+     @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> dataIntegrityViolationException(DataIntegrityViolationException exception) {
        log.error(exception.getMessage());
         return new ResponseEntity<>(
          HttpResponse.builder()

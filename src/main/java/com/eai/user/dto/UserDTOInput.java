@@ -26,5 +26,7 @@ public class UserDTOInput implements Serializable {
     private String name;
 
     private UserStatusEnum statusEnum;
+    
+    private boolean isMfa;
 
 }

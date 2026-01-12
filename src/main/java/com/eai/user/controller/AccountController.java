@@ -1,5 +1,7 @@
 package com.eai.user.controller;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +38,6 @@ import com.eai.user.service.JWTService;
 import com.eai.user.service.UserConfigurationService;
 import com.eai.user.utilities.UserUtils;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -84,28 +84,24 @@ public class AccountController {
     // @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<HttpResponse> saveUser(@RequestParam MultipartFile file, String email, String name,
             String password,
-            UserStatusEnum status) throws Exception {
+            UserStatusEnum status,boolean isMfa) throws Exception {
         TimeUnit.SECONDS.sleep(3);
         UserDTOInput userInput = new UserDTOInput();
         userInput.setEmail(email);
         userInput.setPassword(password);
         userInput.setStatusEnum(status);
         userInput.setName(name);
-        accountService.addUser(file, userInput);
+        userInput.setMfa(isMfa);
+        UserDTO user = accountService.addUser(file, userInput);
         return ResponseEntity.ok().body(
                 HttpResponse.builder()
                         .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("user", accountService.addUser(file, userInput)))
+                        .data(Map.of("user", user))
                         .message("User created")
                         .status(HttpStatus.CREATED)
                         .statusCode(HttpStatus.CREATED.value())
                         .build());
     }
-
-    // private URI getUri() {
-    // return URI.create(
-    // ServletUriComponentsBuilder.fromCurrentContextPath().path("account/get/<idUser>").toUriString());
-    // }
 
     @PostMapping("/login")
     public ResponseEntity<HttpResponse> login(@RequestBody LoginDTO login) throws Exception {
@@ -123,8 +119,8 @@ public class AccountController {
         return ResponseEntity.ok().body(
                 HttpResponse.builder()
                         .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("user", userDTO,"access-token", jwtService.generateAccessToken(getUserPrincipal(userDTO)),
-                                "refresh-token", refreshToken))
+                        .data(Map.of("user", userDTO,"access_token", jwtService.generateAccessToken(getUserPrincipal(userDTO)),
+                                "refresh_token", refreshToken))
                         .message("Token refreshed with success")
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
@@ -169,8 +165,8 @@ public class AccountController {
         return ResponseEntity.ok().body(
                 HttpResponse.builder()
                         .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("access-token", this.jwtService.generateAccessToken(getUserPrincipal(userDto)),
-                                "refresh-token", this.jwtService.generateRefreshToken(getUserPrincipal(userDto))))
+                        .data(Map.of("access_token", this.jwtService.generateAccessToken(getUserPrincipal(userDto)),
+                                "refresh_token", this.jwtService.generateRefreshToken(getUserPrincipal(userDto)),
                         .message("Login success")
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
@@ -184,10 +180,10 @@ public class AccountController {
         return ResponseEntity.ok().body(
                 HttpResponse.builder()
                         .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("access-token",
+                        .data(Map.of("access_token",
                                 this.jwtService
                                         .generateAccessToken(getUserPrincipal(user)),
-                                "refresh-token",
+                                "refresh_token",
                                 this.jwtService
                                         .generateRefreshToken(getUserPrincipal(user)),
                                 "user", user))
