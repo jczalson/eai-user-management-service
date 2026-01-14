@@ -64,7 +64,7 @@ public class UserController {
 	public ResponseEntity<HttpResponse> getCustomerById(@PathVariable long id){
 		CustomerDTO customer = customerService.getCustomerId(id);
 		log.info("customer:{}",customer);
-		return ResponseEntity.created(getUri()).body(
+		return ResponseEntity.ok().body(
 		HttpResponse.builder()
 		.timeStamp(LocalDateTime.now().toString())
 		.data(Map.of("customer", customer))
@@ -93,8 +93,8 @@ public class UserController {
 	    .build());
 	  }
 
-	private URI getUri() {
-		return URI.create(ServletUriComponentsBuilder.
-		fromCurrentContextPath().path("customers/get/<customerId>").toUriString());
-	}
+	// private URI getUri() {
+	// 	return URI.create(ServletUriComponentsBuilder.
+	// 	fromCurrentContextPath().path("customers/get/<customerId>").toUriString());
+	// }
 }

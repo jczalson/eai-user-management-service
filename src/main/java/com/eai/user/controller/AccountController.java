@@ -166,7 +166,7 @@ public class AccountController {
                 HttpResponse.builder()
                         .timeStamp(LocalDateTime.now().toString())
                         .data(Map.of("access_token", this.jwtService.generateAccessToken(getUserPrincipal(userDto)),
-                                "refresh_token", this.jwtService.generateRefreshToken(getUserPrincipal(userDto)),
+                                "refresh_token", this.jwtService.generateRefreshToken(getUserPrincipal(userDto))))
                         .message("Login success")
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
