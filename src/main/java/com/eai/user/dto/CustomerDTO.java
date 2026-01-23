@@ -30,6 +30,7 @@ public class CustomerDTO implements Serializable {
 	
 	private Long customerId;
 	
+	@NotEmpty(message = "Name cannot be empty")
 	private String name;
 	
 	@NotEmpty(message = "Email cannot be empty")

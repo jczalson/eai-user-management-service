@@ -1,6 +1,5 @@
 package com.eai.user.controller;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +18,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.eai.user.dto.CustomerDTO;
 import com.eai.user.entities.HttpResponse;
 import com.eai.user.service.CustomerService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/customers")
@@ -79,7 +79,7 @@ public class UserController {
 	  authentication) { return authentication; }
 	 
 	@PostMapping("/createUser")
-	  public ResponseEntity<HttpResponse> createUser(@RequestBody CustomerDTO customerDTO) throws Exception{
+	  public ResponseEntity<HttpResponse> createUser(@RequestBody @Valid CustomerDTO customerDTO) throws Exception{
      TimeUnit.SECONDS.sleep(3);
 		CustomerDTO customerDTO2 = customerService.savCustomerDTO(customerDTO);
 	  log.info("customer:{}",customerDTO2);
@@ -92,9 +92,4 @@ public class UserController {
 		.statusCode(HttpStatus.CREATED.value())
 	    .build());
 	  }
-
-	// private URI getUri() {
-	// 	return URI.create(ServletUriComponentsBuilder.
-	// 	fromCurrentContextPath().path("customers/get/<customerId>").toUriString());
-	// }
 }

@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.eai.user.dto.LoginDTO;
 import com.eai.user.dto.UserDTO;
@@ -39,214 +41,242 @@ import com.eai.user.service.UserConfigurationService;
 import com.eai.user.utilities.UserUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "account/")
+@Slf4j
 public class AccountController {
+        
+private static final String TOKEN_PREFIX = "Bearer ";
 
-    private static final String TOKEN_PREFIX = "Bearer ";
+@Autowired
+private AccountService accountService;
 
-    @Autowired
-    private AccountService accountService;
+@Autowired
+private JWTService jwtService;
 
-    @Autowired
-    private JWTService jwtService;
+@Autowired
+private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+@Autowired
+private UserConfigurationService configurationService;
 
-    @Autowired
-    private UserConfigurationService configurationService;
+@Autowired
+private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @PostMapping("/addRole")
-    public AppRole saveRole(@RequestBody AppRole appRole) {
+@PostMapping("/addRole")
+public AppRole saveRole(@RequestBody AppRole appRole) {
         return accountService.addRole(appRole);
-    }
+}
 
-    @PatchMapping("/update")
-    public ResponseEntity<HttpResponse> updateUser(@RequestBody UserDTO userDTO) throws InterruptedException {
-        TimeUnit.SECONDS.sleep(3);
-        UserDTO user = accountService.updateUser(userDTO);
-        return ResponseEntity.ok().body(
-                HttpResponse.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("user", user))
-                        .message("User updated")
-                        .status(HttpStatus.OK)
-                        .statusCode(HttpStatus.OK.value())
-                        .build());
-    }
+@PatchMapping("/update")
+public ResponseEntity<HttpResponse> updateUser(@RequestBody UserDTO userDTO) throws InterruptedException {
+ TimeUnit.SECONDS.sleep(3);
+UserDTO user = accountService.updateUser(userDTO);
+return ResponseEntity.ok().body(
+HttpResponse.builder()
+.timeStamp(LocalDateTime.now().toString())
+.data(Map.of("user", user))
+.message("User updated")
+.status(HttpStatus.OK)
+.statusCode(HttpStatus.OK.value())
+.build());
+}
 
-    @PostMapping(path = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    // @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<HttpResponse> saveUser(@RequestParam MultipartFile file, String email, String name,
-            String password,
-            UserStatusEnum status,boolean isMfa) throws Exception {
-        TimeUnit.SECONDS.sleep(3);
-        UserDTOInput userInput = new UserDTOInput();
-        userInput.setEmail(email);
-        userInput.setPassword(password);
-        userInput.setStatusEnum(status);
-        userInput.setName(name);
-        userInput.setMfa(isMfa);
-        UserDTO user = accountService.addUser(file, userInput);
-        return ResponseEntity.ok().body(
-                HttpResponse.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("user", user))
-                        .message("User created")
-                        .status(HttpStatus.CREATED)
-                        .statusCode(HttpStatus.CREATED.value())
-                        .build());
-    }
+@PostMapping(path = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+// @PreAuthorize("hasAuthority('ADMIN')")
+public ResponseEntity<HttpResponse> saveUser(@RequestPart("file") MultipartFile file, String email, String name,
+String password,
+UserStatusEnum status, boolean isMfa) throws Exception {
+TimeUnit.SECONDS.sleep(3);
+UserDTOInput userInput = new UserDTOInput();
+userInput.setEmail(email);
+userInput.setPassword(password);
+userInput.setStatusEnum(status);
+userInput.setName(name);
+userInput.setMfa(isMfa);
+UserDTO user = accountService.addUser(file, userInput);
+return ResponseEntity.ok().body(
+        HttpResponse.builder()
+        .timeStamp(LocalDateTime.now().toString())
+        .data(Map.of("user", user))
+        .message("User created")
+        .status(HttpStatus.CREATED)
+        .statusCode(HttpStatus.CREATED.value())
+        .build());
+}
 
-    @PostMapping("/login")
-    public ResponseEntity<HttpResponse> login(@RequestBody LoginDTO login) throws Exception {
+@PostMapping(path = "/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public String testUpload(@RequestParam("file") MultipartFile file) throws Exception {
+        log.info("File uploaded {}", file.getOriginalFilename());
+        String path = getCurrentContextPath("");
+        log.info("Path {}", path);
+        return file.getOriginalFilename();
+}
+
+@PostMapping("/login")
+public ResponseEntity<HttpResponse> login(@RequestBody LoginDTO login) throws Exception {
         // HandleException is built for all excptions
         Authentication authenication = authenticate(login);
         UserDTO userDto = UserUtils.getLoggedIndUser(authenication);
         return userDto.getIsMfa().booleanValue() ? sendVerificationCode(userDto) : sendResponse(userDto);
-    }
+}
 
-    @GetMapping("/refresh/token")
-    public ResponseEntity<HttpResponse> refreshToken(HttpServletRequest request) throws Exception{
-       if(isHeaderTokenValidated(request)){
-        String refreshToken = request.getHeader(AUTHORIZATION).substring(TOKEN_PREFIX.length());
-       UserDTO userDTO = accountService.getUserById(jwtService.extractUserIdFromToken(refreshToken));
-        return ResponseEntity.ok().body(
-                HttpResponse.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("user", userDTO,"access_token", jwtService.generateAccessToken(getUserPrincipal(userDTO)),
-                                "refresh_token", refreshToken))
-                        .message("Token refreshed with success")
-                        .status(HttpStatus.OK)
-                        .statusCode(HttpStatus.OK.value())
-                        .build());
-        }else{
-          return ResponseEntity.badRequest().body(
-                HttpResponse.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .reason("Refresh token is missing or invalid")
-                        .developerMessage("Refresh token is missing or invalid")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .build());  
+ @GetMapping("/refresh/token")
+ public ResponseEntity<HttpResponse> refreshToken(HttpServletRequest request) throws Exception {
+if (isHeaderTokenValidated(request)) {
+String refreshToken = request.getHeader(AUTHORIZATION).substring(TOKEN_PREFIX.length());
+UserDTO userDTO = accountService.getUserById(jwtService.extractUserIdFromToken(refreshToken));
+return ResponseEntity.ok().body(
+ HttpResponse.builder()
+ .timeStamp(LocalDateTime.now().toString())
+ .data(Map.of("user", userDTO, "access_token",
+ jwtService.generateAccessToken(
+getUserPrincipal(userDTO)),
+"refresh_token", refreshToken))
+.message("Token refreshed with success")
+.status(HttpStatus.OK)
+.statusCode(HttpStatus.OK.value())
+.build());
+ } else {
+         return ResponseEntity.badRequest().body(
+                 HttpResponse.builder()
+.timeStamp(LocalDateTime.now().toString())
+         .reason("Refresh token is missing or invalid")
+ .developerMessage("Refresh token is missing or invalid")
+ .status(HttpStatus.BAD_REQUEST)
+ .statusCode(HttpStatus.BAD_REQUEST.value())
+ .build());
+                }
         }
-    }
-
-    private boolean isHeaderTokenValidated(HttpServletRequest request){
-        return request.getHeader(AUTHORIZATION) != null && 
-               request.getHeader(AUTHORIZATION).startsWith(TOKEN_PREFIX) &&
-               jwtService.validateToken(request.getHeader(AUTHORIZATION).substring(TOKEN_PREFIX.length()), accountService.getUserById(jwtService.extractUserIdFromToken(request.getHeader(AUTHORIZATION).substring(TOKEN_PREFIX.length()))));
-    }
-    private Authentication authenticate(LoginDTO login) {
-        Authentication authentication;
-        authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword()));
-        return authentication;
-    }
-
-    private ResponseEntity<HttpResponse> sendVerificationCode(UserDTO user) {
-        accountService.sendVerificationCode(user);
-        return ResponseEntity.ok().body(
-                HttpResponse.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("user", user))
-                        .message("Verification code sent")
-                        .status(HttpStatus.OK)
-                        .statusCode(HttpStatus.OK.value())
-                        .build());
-    }
-
-    private ResponseEntity<HttpResponse> sendResponse(UserDTO userDto) throws Exception {
-        return ResponseEntity.ok().body(
-                HttpResponse.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("access_token", this.jwtService.generateAccessToken(getUserPrincipal(userDto)),
-                                "refresh_token", this.jwtService.generateRefreshToken(getUserPrincipal(userDto))))
-                        .message("Login success")
-                        .status(HttpStatus.OK)
-                        .statusCode(HttpStatus.OK.value())
-                        .build());
-    }
-
-    @GetMapping("/verify/code/{email}/{code}")
-    public ResponseEntity<HttpResponse> verify(@PathVariable("email") String email,
-            @PathVariable("code") String code) throws Exception {
-        UserDTO user = accountService.verify(email, code);
-        return ResponseEntity.ok().body(
-                HttpResponse.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("access_token",
-                                this.jwtService
-                                        .generateAccessToken(getUserPrincipal(user)),
-                                "refresh_token",
-                                this.jwtService
-                                        .generateRefreshToken(getUserPrincipal(user)),
-                                "user", user))
-                        .message("Login success")
-                        .status(HttpStatus.OK)
-                        .statusCode(HttpStatus.OK.value())
-                        .build());
-    }
-
-    @GetMapping("/user/profile")
-    public ResponseEntity<HttpResponse> profile(Authentication authentication) throws Exception {
-        UserDTO user = accountService.loadUserByUsername(UserUtils.getAuthenticatedUser(authentication).getEmail());
-        return ResponseEntity.ok().body(
-                HttpResponse.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("profile", user))
-                        .message("Profile retrieved")
-                        .status(HttpStatus.OK)
-                        .statusCode(HttpStatus.OK.value())
-                        .build());
-    }
-
-    @PostMapping("/roleToUser")
-    public void addRoleToUser(@RequestBody UserRoleInput userRoleInput) {
-        accountService.addRoleToUser(userRoleInput.getUserName(), userRoleInput.getRoleName());
-    }
-
-    @GetMapping("/roles/{email}")
-    public Map<String, List<String>> getRolesByUserName(@PathVariable String email) {
-        return accountService.findRolesByUserName(email);
-    }
-
-    @GetMapping(path = "/photo/{email}", produces = { MediaType.IMAGE_JPEG_VALUE })
-    public byte[] getUserPhoto(@PathVariable String email) throws Exception {
-        UserDTO user = accountService.loadUserByUsername(email);
-        if (user != null && user.getUserPhoto() != null) {
-            return user.getUserPhoto();
+        
+        private boolean isHeaderTokenValidated(HttpServletRequest request) {
+return request.getHeader(AUTHORIZATION) != null &&
+request.getHeader(AUTHORIZATION).startsWith(TOKEN_PREFIX) &&
+jwtService.validateToken(
+        request.getHeader(AUTHORIZATION).substring(TOKEN_PREFIX.length()),
+        accountService.getUserById(jwtService
+                .extractUserIdFromToken(request.getHeader(AUTHORIZATION)
+                .substring(TOKEN_PREFIX.length()))));
         }
-        return null;
-    }
+        
+private Authentication authenticate(LoginDTO login) {
+Authentication authentication;
+authentication = authenticationManager
+.authenticate(new UsernamePasswordAuthenticationToken(login.getEmail(),
+login.getPassword()));
+return authentication;
+}
 
-    @GetMapping("/users")
-    public ResponseEntity<HttpResponse> getUsers() {
-        List<UserDTO> listOfUsers = accountService.listOfUsers();
-        return ResponseEntity.ok().body(
-                HttpResponse.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .data(Map.of("users", listOfUsers))
-                        .message("Retrieved users")
-                        .status(HttpStatus.FOUND)
-                        .statusCode(HttpStatus.FOUND.value())
-                        .build());
-    }
+private ResponseEntity<HttpResponse> sendVerificationCode(UserDTO user) {
+accountService.sendVerificationCode(user);
+return ResponseEntity.ok().body(
+HttpResponse.builder()
+.timeStamp(LocalDateTime.now().toString())
+.data(Map.of("user", user))
+.message("Verification code sent")
+.status(HttpStatus.OK)
+ .statusCode(HttpStatus.OK.value())
+         .build());
+ }
+ 
+ private ResponseEntity<HttpResponse> sendResponse(UserDTO userDto) throws Exception {
+ return ResponseEntity.ok().body(
+   HttpResponse.builder()
+   .timeStamp(LocalDateTime.now().toString())
+   .data(Map.of("access_token",
+   this.jwtService.generateAccessToken(
+getUserPrincipal(userDto)),
+"refresh_token",
+this.jwtService.generateRefreshToken(
+getUserPrincipal(userDto))))
+.message("Login success")
+.status(HttpStatus.OK)
+    .statusCode(HttpStatus.OK.value())
+    .build());
+   }
+   
+   @GetMapping("/verify/code/{email}/{code}")
+   public ResponseEntity<HttpResponse> verify(@PathVariable("email") String email,
+   @PathVariable("code") String code) throws Exception {
+ UserDTO user = accountService.verify(email, code);
+     return ResponseEntity.ok().body(
+   HttpResponse.builder()
+   .timeStamp(LocalDateTime.now().toString())
+.data(Map.of("access_token",
+this.jwtService
+.generateAccessToken(
+getUserPrincipal(user)),
+"refresh_token",
+this.jwtService
+.generateRefreshToken(
+getUserPrincipal(user)),
+"user", user))
+.message("Login success")
+.status(HttpStatus.OK)
+.statusCode(HttpStatus.OK.value())
+.build());
+}
 
+@GetMapping("/user/profile")
+public ResponseEntity<HttpResponse> profile(Authentication authentication) throws Exception {
+UserDTO user = accountService
+        .loadUserByUsername(UserUtils.getAuthenticatedUser(authentication).getEmail());
+    return ResponseEntity.ok().body(
+            HttpResponse.builder()
+.timeStamp(LocalDateTime.now().toString())
+ .data(Map.of("profile", user))
+ .message("Profile retrieved")
+ .status(HttpStatus.OK)
+ .statusCode(HttpStatus.OK.value())
+ .build());
+}
+
+ @PostMapping("/roleToUser")
+ public void addRoleToUser(@RequestBody UserRoleInput userRoleInput) {
+    accountService.addRoleToUser(userRoleInput.getUserName(), userRoleInput.getRoleName());
+}
+   
+@GetMapping("/roles/{email}")
+public Map<String, List<String>> getRolesByUserName(@PathVariable String email) {
+            return accountService.findRolesByUserName(email);
+    }
+    
+    @GetMapping(path = "/image/{email}", consumes = { MediaType.IMAGE_JPEG_VALUE })
+ public String getUserImage(@PathVariable String email) throws Exception {
+ UserDTO user = accountService.loadUserByUsername(email);
+if (user != null && user.getImageUrl() != null) {
+return user.getImageUrl();
+}
+return null;
+ }
+ 
+ @GetMapping("/users")
+ public ResponseEntity<HttpResponse> getUsers() {
+         List<UserDTO> listOfUsers = accountService.listOfUsers();
+         return ResponseEntity.ok().body(
+    HttpResponse.builder()
+.timeStamp(LocalDateTime.now().toString())                                                                                                               .data(Map.of("users", listOfUsers))
+.message("Retrieved users")
+                                                                                                                                                .status(HttpStatus.FOUND)
+                                                                                                                                                .statusCode(HttpStatus.FOUND.value())
+                                                                                                                                                .build());
+    }
+    
     @GetMapping("/user/{id}")
     public UserDTO getUsers(@PathVariable String id) throws Exception {
-        UserDTO user = accountService.loadUserByUsername(id);
-        return user;
-    }
-
-    private UserPrincipal getUserPrincipal(UserDTO userDTO) throws Exception {
-        UserPrincipal userPrincipal = new UserPrincipal();
-        userPrincipal.setUser(accountService.loadUserByUsername(userDTO.getEmail()));
-        return userPrincipal;
-    }
+            UserDTO user = accountService.loadUserByUsername(id);
+return user;
+ }
+ 
+ private UserPrincipal getUserPrincipal(UserDTO userDTO) throws Exception {
+         UserPrincipal userPrincipal = new UserPrincipal();
+                                                                                                                                                userPrincipal.setUser(accountService.loadUserByUsername(userDTO.getEmail()));
+ return userPrincipal;
+ }
+ 
+ private String getCurrentContextPath(String email) {
+         return ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/account/"+email+".png").toUriString();
+}
 }
