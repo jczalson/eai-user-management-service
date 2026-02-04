@@ -46,7 +46,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
      */
     private static final String[] PUBLIC_URLS = { "/account/register","/account/file",
             "/account/login", "/v3/api-docs/", "/account/verify/","/account/refresh/token",
-            "/swagger-ui/",
+            "/swagger-ui/","/account/user/image",
             "/swagger-ui.html", "/actuator/", "/ws/", "/url/", "/url-conf/" };
 
     protected static final String TOKEN_PREFIX = "Bearer ";

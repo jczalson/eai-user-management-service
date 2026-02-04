@@ -46,6 +46,9 @@ public class AppUser implements Serializable {
     @Column(name="PHOTO")
     private String photo;
 
+    @Column(name="IMAGE")
+    private String imageUrl;
+
     // @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private UserStatusEnum userStatusEnum;

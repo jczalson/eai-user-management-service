@@ -1,5 +1,6 @@
 package com.eai.user.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,16 +12,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.eai.user.dto.TwoFactorVerificationsDTO;
 import com.eai.user.dto.UserDTO;
@@ -38,6 +42,7 @@ import com.eai.user.utilities.AccountUtilities;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Service
 @Transactional
@@ -64,6 +69,8 @@ public class AccountServiceImplm implements AccountService {
 
     @Autowired
     private UserActivityProducer userActivityProducer;
+
+    private String setImageUrl;
 
     @Override
     public void addRoleToUser(String email, String roleName) {
@@ -111,6 +118,38 @@ public class AccountServiceImplm implements AccountService {
     @Override
     public AppRole addRole(AppRole appRole) {
         return appRoleRepository.save(appRole);
+    }
+
+    @Override
+    public UserDTO updateUserImage(MultipartFile image, UserDTO userDTO) {
+        String imageUrl = buildImageUrl(userDTO.getEmail());
+        userDTO.setImageUrl(imageUrl);
+        saveImage(image, userDTO.getEmail());
+        appUserRepository.updateImage(imageUrl,userDTO.getIdUser());
+     return userDTO;
+    }
+
+    private void saveImage(MultipartFile image, String email) {
+        Path folderPath = Paths.get(System.getProperty("user.home")+"/Downloads/image").toAbsolutePath().normalize();
+        if (!Files.exists(folderPath)) {
+            try {
+                Files.createDirectories(folderPath);
+            } catch (Exception e) {
+                log.error("Error creating folder directory", e.getMessage());
+                throw new InvalidateRequestException("Unable to create folder",e);
+            }
+           log.info("Folder created correctly {}", folderPath);
+        }
+        try {
+           Files.copy(image.getInputStream(), folderPath.resolve(email+".png"),REPLACE_EXISTING);
+        log.info("Image saved correctly in {}", folderPath);
+        } catch (Exception e) {
+           log.error("Error occured when saving image", e);
+        }
+    }
+
+    private String buildImageUrl(String email) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path("/account/user/image/" + email +".png").toUriString();
     }
 
     @Override
@@ -207,45 +246,46 @@ public class AccountServiceImplm implements AccountService {
 
     @Override
     public UserDTO getUserById(Long userId) {
-      return  AccountUtilities.fromUserEntityToDto(appUserRepository.findById(userId).get());
+        return AccountUtilities.fromUserEntityToDto(appUserRepository.findById(userId).get());
     }
 
     @Override
     public UserDTO updateUser(UserDTO userDTO) {
-        if(userDTO !=null){
-            if(StringUtils.isBlank(String.valueOf(userDTO.getIdUser()))){
+        if (userDTO != null) {
+            if (StringUtils.isBlank(String.valueOf(userDTO.getIdUser()))) {
                 throw new InvalidateRequestException("UserId cannot be null");
             }
-             if(StringUtils.isBlank(userDTO.getEmail())){
+            if (StringUtils.isBlank(userDTO.getEmail())) {
                 throw new InvalidateRequestException("Email cannot be null");
             }
-             if(StringUtils.isBlank(userDTO.getName())){
+            if (StringUtils.isBlank(userDTO.getName())) {
                 throw new InvalidateRequestException("UserId cannot be null");
             }
-     UserDTO dto =  fromExistedToUpdatedOne(getUserById(userDTO.getIdUser()), userDTO);
-     return AccountUtilities.fromUserEntityToDto(appUserRepository.save(AccountUtilities.fromUserDtoToEntity(dto)));
+            UserDTO dto = fromExistedToUpdatedOne(getUserById(userDTO.getIdUser()), userDTO);
+            return AccountUtilities
+                    .fromUserEntityToDto(appUserRepository.save(AccountUtilities.fromUserDtoToEntity(dto)));
         }
         return null;
     }
 
     private UserDTO fromExistedToUpdatedOne(UserDTO existedUserDto, UserDTO userDto) {
-        if(StringUtils.isNotBlank(userDto.getPassword()))
-        existedUserDto.setPassword(userDto.getPassword());
+        if (StringUtils.isNotBlank(userDto.getPassword()))
+            existedUserDto.setPassword(userDto.getPassword());
 
-        if(userDto.getStatusEnum() !=null)
-        existedUserDto.setStatusEnum(userDto.getStatusEnum());
+        if (userDto.getStatusEnum() != null)
+            existedUserDto.setStatusEnum(userDto.getStatusEnum());
 
-        if(StringUtils.isNotBlank(userDto.getEmail()))
-        existedUserDto.setEmail(userDto.getEmail());
+        if (StringUtils.isNotBlank(userDto.getEmail()))
+            existedUserDto.setEmail(userDto.getEmail());
 
-        if(StringUtils.isNotBlank(userDto.getName()))
-        existedUserDto.setName(userDto.getName());
+        if (StringUtils.isNotBlank(userDto.getName()))
+            existedUserDto.setName(userDto.getName());
 
         if (StringUtils.isNotBlank(userDto.getPhoto())) {
             existedUserDto.setPhoto(userDto.getPhoto());
         }
-        if(userDto.getIsMfa() !=null)
-        existedUserDto.setIsMfa(userDto.getIsMfa());
+        if (userDto.getIsMfa() != null)
+            existedUserDto.setIsMfa(userDto.getIsMfa());
         // BeanUtils.copyProperties(userDto, existedUserDto);
         return existedUserDto;
     }

@@ -22,6 +22,9 @@ public class AccountUtilities {
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
         dto.setIsMfa(user.getIsMfa());
+        if(StringUtils.isNotBlank(user.getImageUrl())){
+         dto.setImageUrl(user.getImageUrl());
+        }
         if (StringUtils.isNotBlank(user.getPhoto())) {
             dto.setPhoto(user.getPhoto());
             try {
@@ -42,6 +45,9 @@ public class AccountUtilities {
         AppUser entity = new AppUser();
         entity.setIdUser(userDto.getIdUser());
 
+        if(StringUtils.isNotBlank(userDto.getImageUrl())){
+         entity.setImageUrl(userDto.getImageUrl());
+        }
         if(StringUtils.isNotBlank(userDto.getPassword()))
         entity.setPassword(userDto.getPassword());
 

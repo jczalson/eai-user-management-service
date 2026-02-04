@@ -66,9 +66,9 @@ public class SecurityConfig {
      * /account/refresh/token/ is whitelisted because 
      * don't need to be filtererd as it doesn't have authorities
      */
-    private static final String [] PUBLIC_URLS = {"/account/register","/account/file",
+    private static final String [] PUBLIC_URLS = {"/account/register","/account/register",
                    "/account/login","/v3/api-docs/**",
-                   "/swagger-ui/**","/account/verify/code/**",
+                   "/swagger-ui/**","/account/verify/code/**","/account/user/image/**",
                     "/swagger-ui.html", "/actuator/**",
                     "/ws/**","/ws/info/**",
                     "/url/**","/url-conf/**","account/refresh/token/**"};

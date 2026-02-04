@@ -2,6 +2,10 @@ package com.eai.user.controller;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -243,13 +247,33 @@ public Map<String, List<String>> getRolesByUserName(@PathVariable String email) 
             return accountService.findRolesByUserName(email);
     }
     
-    @GetMapping(path = "/image/{email}", consumes = { MediaType.IMAGE_JPEG_VALUE })
+@GetMapping(path = "/image/{email}", consumes = { MediaType.IMAGE_JPEG_VALUE })
  public String getUserImage(@PathVariable String email) throws Exception {
  UserDTO user = accountService.loadUserByUsername(email);
-if (user != null && user.getImageUrl() != null) {
-return user.getImageUrl();
+  if (user != null && user.getImageUrl() != null) {
+ return user.getImageUrl();
 }
-return null;
+ return null;
+ }
+
+     
+@PatchMapping(path = "/update/image")
+ public ResponseEntity<HttpResponse> updateImageUrl(Authentication authentication,@RequestParam("image")MultipartFile image) throws Exception {
+  UserDTO user = UserUtils.getAuthenticatedUser(authentication); 
+  UserDTO updateUserImage = accountService.updateUserImage(image, user);
+return ResponseEntity.ok().body(
+        HttpResponse.builder()
+        .timeStamp(LocalDateTime.now().toString())
+        .data(Map.of("user", updateUserImage))
+        .message("Profile image updated")
+        .status(HttpStatus.OK)
+        .statusCode(HttpStatus.OK.value())
+        .build());
+}
+ 
+@GetMapping(path="/user/image/{fileName}",produces = {MediaType.IMAGE_PNG_VALUE})
+ public byte[] getProfileImage(@PathVariable("fileName") String fileName) throws Exception {
+   return Files.readAllBytes(Paths.get(System.getProperty("user.home")+"/Downloads/image/"+fileName));
  }
  
  @GetMapping("/users")
@@ -259,9 +283,7 @@ return null;
     HttpResponse.builder()
 .timeStamp(LocalDateTime.now().toString())                                                                                                               .data(Map.of("users", listOfUsers))
 .message("Retrieved users")
-                                                                                                                                                .status(HttpStatus.FOUND)
-                                                                                                                                                .statusCode(HttpStatus.FOUND.value())
-                                                                                                                                                .build());
+.build());
     }
     
     @GetMapping("/user/{id}")
