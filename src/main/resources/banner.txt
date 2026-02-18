@@ -8,3 +8,4 @@
           |_|   |_|                                                   
 ${application.title} ${application.version}
 Powered by Spring Boot ${spring-boot.version}
+https://patorjk.com/software/taag/#p=display&f=Graffiti&t=ZALE&x=rainbow2&v=4&h=4&w=80&we=false

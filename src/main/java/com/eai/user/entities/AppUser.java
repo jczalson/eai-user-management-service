@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -43,9 +42,6 @@ public class AppUser implements Serializable {
     @Column(name = "PWD")
     private String password;
     
-    @Column(name="PHOTO")
-    private String photo;
-
     @Column(name="IMAGE")
     private String imageUrl;
 
@@ -59,6 +55,10 @@ public class AppUser implements Serializable {
     // @JoinTable(name = "APP_USER_ROLE",
     // joinColumns = @JoinColumn(name = "ID_USER"),
     // inverseJoinColumns = @JoinColumn(name = "ID_ROLE"))
+    //  private List<AppRole> roleList;
     @OneToMany(mappedBy = "appUser",fetch = FetchType.EAGER)
     private List<AppUserRole> userRoleList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
+    private List<UserEventEntity> userEvents = new ArrayList<>();
 }

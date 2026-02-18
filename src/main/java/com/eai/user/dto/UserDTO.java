@@ -7,6 +7,7 @@ import java.util.List;
 import com.eai.user.entities.UserStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@EqualsAndHashCode
 @ToString
 public class UserDTO implements Serializable {
 
@@ -31,9 +33,7 @@ public class UserDTO implements Serializable {
     private String imageUrl;
 
     private Boolean isMfa;
-    //  @JsonIgnore
-    private byte[] userPhoto;
-
+    
     // @JsonProperty( access = JsonProperty.Access.WRITE_ONLY)
     @JsonIgnore
     private String password;

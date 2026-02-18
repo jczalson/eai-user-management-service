@@ -20,7 +20,7 @@ import com.eai.user.dto.CustomerDTO;
 import com.eai.user.entities.AddressEntity;
 import com.eai.user.entities.CustomerEntity;
 import com.eai.user.entities.CustomerType;
-import com.eai.user.exception.InvalidateRequestException;
+import com.eai.user.exception.RestApiException;
 import com.eai.user.repository.CustomerRepository;
 import com.eai.user.utilities.CustomerUtilities;
 
@@ -56,7 +56,7 @@ public class CustomerServiceTest {
     @Test
     public void testSaveCustomerEmailNull() {
         when(customerRepository.save(any(CustomerEntity.class))).thenReturn(createCustomerEmailNull());
-       assertThrows(InvalidateRequestException.class, ()->customerService
+       assertThrows(RestApiException.class, ()->customerService
                 .savCustomerDTO(CustomerUtilities.fromCustomerEntityToDto(createCustomerEmailNull())));
     }
 
@@ -79,7 +79,7 @@ public class CustomerServiceTest {
      @Test
     public void testGetCustomerByEmailAlreadyExist(){
         when(customerRepository.findByEmail("jc@gmail.com")).thenReturn(Optional.of(createCustomerEntity()));
-       assertThrows(InvalidateRequestException.class, ()->customerService.savCustomerDTO(CustomerUtilities.fromCustomerEntityToDto(createCustomerEntity())));
+       assertThrows(RestApiException.class, ()->customerService.savCustomerDTO(CustomerUtilities.fromCustomerEntityToDto(createCustomerEntity())));
     }
     private CustomerEntity createCustomerEntity() {
         CustomerEntity cust = new CustomerEntity();

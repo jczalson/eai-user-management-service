@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +21,8 @@ import com.eai.user.repository.CustomerRepository;
 @ExtendWith(SpringExtension.class)
 public class UserConfigurationServiceTest {
 
-@InjectMocks UserConfigurationServiceImpl  configService;
+@InjectMocks 
+UserConfigurationServiceImpl  configService;
 
     @Mock
     private CustomerRepository customerRepository;

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import com.eai.user.dto.UserDTO;
 import com.eai.user.entities.AppUser;
 import com.eai.user.entities.UserPrincipal;
-import com.eai.user.exception.InvalidateRequestException;
+import com.eai.user.exception.RestApiException;
 
 import jakarta.servlet.http.HttpServletRequest;
 

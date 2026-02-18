@@ -33,8 +33,8 @@ public class AddressController {
 	@GetMapping("/addresse/{id}")
 	public ResponseEntity<AddressDTO> getAddressByID(@PathVariable Long id){
 		AddressDTO dto = addressService.getAddressById(id);
-		log.info("The address:{}",dto);
-		return ResponseEntity.ok(dto);
+			log.info("The address:{}",dto);
+			return ResponseEntity.ok(dto);
 		
 	}
 	

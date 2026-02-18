@@ -23,10 +23,10 @@ public class MyCustomeUserService implements UserDetailsService{
     private AppUserRepository appUserRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
      Optional<AppUser> userOp = appUserRepository.findUserByEmailAndStatus(username);
      if(!userOp.isPresent()){
-      throw new UsernameNotFoundException("User not found");
+      throw new UsernameNotFoundException("User not found "+username);
      }
      UserDTO userDto = AccountUtilities.fromUserEntityToDto(userOp.get());
         return new UserPrincipal(userDto);

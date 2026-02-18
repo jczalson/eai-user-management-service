@@ -1,8 +1,5 @@
 package com.eai.user.utilities;
 
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,14 +21,6 @@ public class AccountUtilities {
         dto.setIsMfa(user.getIsMfa());
         if(StringUtils.isNotBlank(user.getImageUrl())){
          dto.setImageUrl(user.getImageUrl());
-        }
-        if (StringUtils.isNotBlank(user.getPhoto())) {
-            dto.setPhoto(user.getPhoto());
-            try {
-                dto.setUserPhoto(Files.readAllBytes(Path.of(URI.create(user.getPhoto()))));
-            } catch (Exception ex) {
-
-            }
         }
         if (user != null && !user.getUserRoleList().isEmpty()) {
             dto.getRolesOfUser().addAll(user.getUserRoleList().stream()
@@ -60,9 +49,6 @@ public class AccountUtilities {
         if(StringUtils.isNotBlank(userDto.getName()))
         entity.setName(userDto.getName());
 
-        if (StringUtils.isNotBlank(userDto.getPhoto())) {
-            entity.setPhoto(userDto.getPhoto());
-        }
         if(userDto.getIsMfa() != null)
         entity.setIsMfa(userDto.getIsMfa());
     
@@ -77,9 +63,7 @@ public class AccountUtilities {
         entity.setEmail(inputUser.getEmail());
         if(StringUtils.isNotBlank(inputUser.getName()))
          entity.setName(inputUser.getName());
-        if (StringUtils.isNotBlank(inputUser.getPhoto())) {
-            entity.setPhoto(inputUser.getPhoto());
-        }
+
         entity.setIsMfa(inputUser.isMfa());
 //  BeanUtils.copyProperties(inputUser, entity);
         return entity;

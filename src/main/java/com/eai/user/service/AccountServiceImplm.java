@@ -33,7 +33,7 @@ import com.eai.user.entities.AppRole;
 import com.eai.user.entities.AppUser;
 import com.eai.user.entities.AppUserRole;
 import com.eai.user.entities.AppUserRoleKey;
-import com.eai.user.exception.InvalidateRequestException;
+import com.eai.user.exception.RestApiException;
 import com.eai.user.messaging.producer.UserActivityProducer;
 import com.eai.user.repository.AppRoleRepository;
 import com.eai.user.repository.AppUserRepository;
@@ -88,10 +88,10 @@ public class AccountServiceImplm implements AccountService {
                 appUserRole.setAppRole(role.get());
                 userRoleRepository.save(appUserRole);
             } else {
-                throw new InvalidateRequestException("Error occurred when  adding role");
+                throw new RestApiException("Error occurred when  adding role");
             }
         } catch (Exception ex) {
-            throw new InvalidateRequestException("Error occurred when  adding role", ex);
+            throw new RestApiException("Error occurred when  adding role", ex);
         }
 
     }
@@ -136,7 +136,7 @@ public class AccountServiceImplm implements AccountService {
                 Files.createDirectories(folderPath);
             } catch (Exception e) {
                 log.error("Error creating folder directory", e.getMessage());
-                throw new InvalidateRequestException("Unable to create folder",e);
+                throw new RestApiException("Unable to create folder",e);
             }
            log.info("Folder created correctly {}", folderPath);
         }
@@ -203,7 +203,7 @@ public class AccountServiceImplm implements AccountService {
     @Override
     public UserDTO verify(String email, String code) {
         if (isCodeExpired(code)) {
-            throw new InvalidateRequestException("Code is expired. Please login again");
+            throw new RestApiException("Code is expired. Please login again");
         }
         try {
             UserDTO userEmail = this.loadUserByUsername(email);
@@ -216,13 +216,13 @@ public class AccountServiceImplm implements AccountService {
                     twoFactorVerificationsService.deleteCode(userFromFactorVerificationByCode);
                     return userEmail;
                 } else {
-                    throw new InvalidateRequestException("Code is invalid. please try again");
+                    throw new RestApiException("Code is invalid. please try again");
                 }
             }
         } catch (EmptyResultDataAccessException ex) {
-            throw new InvalidateRequestException("Could not find record");
+            throw new RestApiException("Could not find record");
         } catch (Exception ex) {
-            throw new InvalidateRequestException("Could not find record");
+            throw new RestApiException("Could not find record");
         }
         return null;
     }
@@ -233,7 +233,7 @@ public class AccountServiceImplm implements AccountService {
             return two != null && two.getExpiryDate() != null && two.getExpiryDate().isBefore(LocalDateTime.now());
 
         } catch (Exception e) {
-            throw new InvalidateRequestException("Record not found " + e.getMessage());
+            throw new RestApiException("Record not found " + e.getMessage());
         }
     }
 
@@ -253,13 +253,13 @@ public class AccountServiceImplm implements AccountService {
     public UserDTO updateUser(UserDTO userDTO) {
         if (userDTO != null) {
             if (StringUtils.isBlank(String.valueOf(userDTO.getIdUser()))) {
-                throw new InvalidateRequestException("UserId cannot be null");
+                throw new RestApiException("UserId cannot be null");
             }
             if (StringUtils.isBlank(userDTO.getEmail())) {
-                throw new InvalidateRequestException("Email cannot be null");
+                throw new RestApiException("Email cannot be null");
             }
             if (StringUtils.isBlank(userDTO.getName())) {
-                throw new InvalidateRequestException("UserId cannot be null");
+                throw new RestApiException("UserId cannot be null");
             }
             UserDTO dto = fromExistedToUpdatedOne(getUserById(userDTO.getIdUser()), userDTO);
             return AccountUtilities

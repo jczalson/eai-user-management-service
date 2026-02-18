@@ -14,7 +14,7 @@ import com.eai.user.dto.TwoFactorVerificationsDTO;
 import com.eai.user.dto.UserDTO;
 import com.eai.user.entities.AppUser;
 import com.eai.user.entities.TwoFactorVerificationsEntity;
-import com.eai.user.exception.InvalidateRequestException;
+import com.eai.user.exception.RestApiException;
 import com.eai.user.repository.AppUserRepository;
 import com.eai.user.repository.TwoFactorVerificationsRepository;
 
@@ -88,7 +88,7 @@ public class TwoFactorVerificationsImpl implements TwoFactorVerificationsService
             return dto;
         }else{
             log.warn("No code retrieved {} for the user id {}",code,email);
-        throw new InvalidateRequestException("Code is invalid. please try again");
+        throw new RestApiException("Code is invalid. please try again");
         }
     }
 
