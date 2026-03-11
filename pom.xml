@@ -19,6 +19,7 @@
   <properties>
     <java.version>21</java.version>
     <spring-cloud.version>2025.0.0</spring-cloud.version>
+    <mapstruct.version>1.6.3</mapstruct.version>
   </properties>
   <dependencies>
     <dependency>
@@ -77,6 +78,13 @@
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <version>8.0.33</version>
+    </dependency>
+    <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${mapstruct.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -167,17 +175,39 @@
           </annotationProcessorPaths>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstruct.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>
     <profile>
       <id>local</id>
-      <!-- <activation>
+      <activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
 				<spring.profiles.active>local</spring.profiles.active>
-			</properties> -->
+			</properties>
+    </profile>
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <spring.profiles.active>dev</spring.profiles.active>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>com.h2database</groupId>
@@ -186,14 +216,14 @@
         </dependency>
       </dependencies>
     </profile>
-    <!-- <profile>
-		<id>dev</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<properties>
-				<spring.profiles.active>dev</spring.profiles.active>
-			</properties>
-		</profile> -->
+    <profile>
+      <id>prod</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <spring.profiles.active>prod</spring.profiles.active>
+      </properties>
+    </profile>
   </profiles>
 </project>

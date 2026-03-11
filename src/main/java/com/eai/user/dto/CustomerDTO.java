@@ -46,5 +46,6 @@ public class CustomerDTO implements Serializable {
 	
 	private CustomerType customerType;
 	
-	private AddressDTO addressDTO;
+  // @JsonBackReference  with this address is ignored
+	private AddressDTO address;
 }

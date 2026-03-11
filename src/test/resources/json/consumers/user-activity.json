@@ -1,6 +1,6 @@
  {
   "idUser" : 1,
-  "userName" : "koko@mail.com",
+  "email" : "koko@mail.com",
   "name" : "kooo",
   "photo" : " ",
   "statusEnum" : "CREATED",

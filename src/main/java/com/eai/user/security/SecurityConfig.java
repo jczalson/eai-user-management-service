@@ -69,10 +69,10 @@ public class SecurityConfig {
     private static final String [] PUBLIC_URLS = {"/account/register",
                    "/account/login","/v3/api-docs/**",
                    "/swagger-ui/**","/account/verify/code/**","/account/user/image/**","/event/event/add/**",
-                   "/event/user/event/add/**",
+                   "/event/user/event/add/**","/h2/**",
                    "/event/user/event/**","/event/user/events/**",
                     "/swagger-ui.html", "/actuator/**",
-                    "/ws/**","/ws/info/**",
+                    "/ws/**","/ws**","/ws/info/**","/ws/info**",
                     "/url/**","/url-conf/**","/account/refresh/token/**"};
 
                     // private static final String [] PUBLIC_URLS = {"/**"};

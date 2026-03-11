@@ -31,9 +31,9 @@ public class CustomerUtilities {
 			customerDTO.setCreatedDate(customerEntity.getCreatedDate().toLocalDateTime());
 		}
 			
-		if(customerEntity.getAddressEntity() !=null) {
-			AddressDTO fromAddressEntityToDto = AddressUtilities.fromAddressEntityToDto(customerEntity.getAddressEntity());
-			customerDTO.setAddressDTO(fromAddressEntityToDto);
+		if(customerEntity.getAddress() !=null) {
+			AddressDTO fromAddressEntityToDto = AddressUtilities.fromAddressEntityToDto(customerEntity.getAddress());
+			customerDTO.setAddress(fromAddressEntityToDto);
 		}
 		
 		return customerDTO;
@@ -61,9 +61,9 @@ public class CustomerUtilities {
 			entity.setCreatedDate(Timestamp.valueOf(dto.getCreatedDate()));
 		}
 			
-		if(dto.getAddressDTO() !=null) {
-			AddressEntity addressEntity = AddressUtilities.fromAddressDtoToEntity(dto.getAddressDTO());
-			entity.setAddressEntity(addressEntity);
+		if(dto.getAddress() !=null) {
+			AddressEntity addressEntity = AddressUtilities.fromAddressDtoToEntity(dto.getAddress());
+			entity.setAddress(addressEntity);
 		}
 		
 		return entity;

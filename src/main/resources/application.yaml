@@ -9,8 +9,8 @@ spring:
   # main:
   #   allow-circular-references: true  
   #property set into pom.xml
-  # profiles:
-  #   active: @spring.profiles.active@  
+  profiles:
+    active: @spring.profiles.active@  
   security:
     oauth2:
       client:

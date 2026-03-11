@@ -1,12 +1,7 @@
 package com.eai.user.event;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-
 import org.springframework.context.ApplicationEvent;
-
 import com.eai.user.dto.EventTypeEnum;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,8 +17,4 @@ public class NewUserEvent extends ApplicationEvent{
     this.type = type;
     this.email = email;
   }
-
-  
-  
-
 }

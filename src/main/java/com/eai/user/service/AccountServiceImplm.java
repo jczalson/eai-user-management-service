@@ -70,7 +70,6 @@ public class AccountServiceImplm implements AccountService {
     @Autowired
     private UserActivityProducer userActivityProducer;
 
-    private String setImageUrl;
 
     @Override
     public void addRoleToUser(String email, String roleName) {
@@ -281,9 +280,6 @@ public class AccountServiceImplm implements AccountService {
         if (StringUtils.isNotBlank(userDto.getName()))
             existedUserDto.setName(userDto.getName());
 
-        if (StringUtils.isNotBlank(userDto.getPhoto())) {
-            existedUserDto.setPhoto(userDto.getPhoto());
-        }
         if (userDto.getIsMfa() != null)
             existedUserDto.setIsMfa(userDto.getIsMfa());
         // BeanUtils.copyProperties(userDto, existedUserDto);

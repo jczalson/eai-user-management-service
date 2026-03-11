@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,8 @@ import com.eai.user.dto.EventDTO;
 import com.eai.user.dto.UserDTO;
 import com.eai.user.dto.UserEventDTO;
 import com.eai.user.dto.UserEventInput;
+import com.eai.user.entities.UserEventEntity;
+import com.eai.user.mapper.UserEventMapper;
 import com.eai.user.repository.UserEventRepository;
 import com.eai.user.utilities.UserEventUtilities;
 
@@ -26,6 +30,11 @@ public class UserEventServiceImpl implements UserEventService {
 
   @Autowired
   private EventService eventService;
+
+  @Autowired
+  private UserEventMapper userEventMapper;
+
+  
 
   public UserEventDTO createUserEvent(UserEventDTO userEventDTO) {
     return UserEventUtilities.fromEntityToDto(repo.save(UserEventUtilities.fromDtoToEntity(userEventDTO)));
@@ -49,6 +58,12 @@ public class UserEventServiceImpl implements UserEventService {
       return UserEventUtilities.fromEntityToDto(repo.findUserEventEntityByidUserEvent(id).get());
     }
     return null;
+  }
+
+  @Override
+  public Page<UserEventDTO> getUserEventsByUserId(Long id,int page, int size) {
+    Page<UserEventEntity> userEvents = repo.findUserEventEntityByUserId(id,PageRequest.of(page, size));
+    return userEvents.map(userEventMapper::toDto);
   }
 
   @Override

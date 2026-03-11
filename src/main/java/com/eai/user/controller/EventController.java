@@ -2,15 +2,19 @@ package com.eai.user.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eai.user.dto.EventDTO;
@@ -62,6 +66,18 @@ public class EventController {
         .data(Map.of("user-event", event))
         .message("User Event created successfully")
         .developerMessage("User Event created succefully")
+        .status(HttpStatus.OK)
+        .statusCode(HttpStatus.OK.value())
+        .build());
+  }
+
+   @GetMapping("/user/events/list")
+  public ResponseEntity<HttpResponse> getUserEvent(@AuthenticationPrincipal UserDTO user,@RequestParam Optional<Integer> page,@RequestParam Optional<Integer> size) throws Exception {
+    Page<UserEventDTO> userEvents =  userEventService.getUserEventsByUserId(user.getIdUser(), page.orElse(0), size.orElse(10));
+    return ResponseEntity.ok().body(HttpResponse.builder()
+        .data(Map.of("userEvents", userEvents,"user",user))
+        .message("User Events retrieved successfully")
+        .developerMessage("User Events retrieved successfully")
         .status(HttpStatus.OK)
         .statusCode(HttpStatus.OK.value())
         .build());

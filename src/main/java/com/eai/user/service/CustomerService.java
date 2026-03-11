@@ -2,6 +2,8 @@ package com.eai.user.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import com.eai.user.dto.CustomerDTO;
 
 public interface CustomerService {
@@ -17,4 +19,8 @@ public interface CustomerService {
 	public String deleteCustomer(Long idCustomer);
 
 	public CustomerDTO getCustomeByEmail(String email);
+
+  // public Page<CustomerDTO> serachCustomers(String name,int page, int size);
+
+  public Page<CustomerDTO> getAllPageCustomers(int page, int size);
 }

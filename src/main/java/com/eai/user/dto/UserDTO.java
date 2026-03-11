@@ -28,8 +28,6 @@ public class UserDTO implements Serializable {
 
     private String name;
 
-    private String photo;
-
     private String imageUrl;
 
     private Boolean isMfa;

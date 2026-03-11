@@ -57,7 +57,7 @@ public class CustomerEntity implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	@JoinColumn(name = "ID_ADDRESS")
-	private AddressEntity addressEntity;
+	private AddressEntity address;
 
 	@Column(name="config_json")
 	@Lob

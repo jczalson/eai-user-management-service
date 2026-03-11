@@ -21,33 +21,33 @@ import com.eai.user.repository.CustomerRepository;
 @ExtendWith(SpringExtension.class)
 public class UserConfigurationServiceTest {
 
-@InjectMocks 
-UserConfigurationServiceImpl  configService;
+  @InjectMocks
+  UserConfigurationServiceImpl configService;
 
-    @Mock
-    private CustomerRepository customerRepository;
+  @Mock
+  private CustomerRepository customerRepository;
 
-    @Test
-    public void testConfig() {
-      String str ="[{\"configurationType\":\"LOCATION_CONFIRMATION\",\"configurationAttributes\":[{\"configurationAttribute\":\"docking\",\"configurationEnabled\":\"true\",\"configurationValue\":null}],\"updatedDate\":\"2025-04-25\",\"createdBy\":\"JC\"}]";
-      when(customerRepository.findJsonFile("jc@gmail.com")).thenReturn(Optional.of(str));
-      List<ConfigAttributeDTO> userConfigAtt = configService.getUserConfigAtt("jc@gmail.com");
-      assertNotNull(userConfigAtt);
-      AtomicBoolean attbute = new AtomicBoolean();
- if (userConfigAtt != null && userConfigAtt.size() > 0) {
-                userConfigAtt.stream().forEach(cfg -> {
-                    if (cfg.getConfigurationType() != null && cfg.getConfigurationType().getConfigType()
-                            .equals(ConfigurationTypeEnum.LOCATION_CONFIRMATION.getConfigType())) {
-                        cfg.getConfigurationAttributes().stream().forEach(attb -> {
-                            if(attb.getConfigurationAttribute() != null
-                                    && attb.getConfigurationAttribute().equals("docking")) {
-                                attbute.set(attb.getConfigurationEnabled().booleanValue());
-                            }
-                        });
-                    }
-                });
-                assertEquals(true, attbute.get());
+  @Test
+  public void testConfig() {
+    String str = "[{\"configurationType\":\"LOCATION_CONFIRMATION\",\"configurationAttributes\":[{\"configurationAttribute\":\"docking\",\"configurationEnabled\":\"true\",\"configurationValue\":null}],\"updatedDate\":\"2025-04-25\",\"createdBy\":\"JC\"}]";
+    when(customerRepository.findJsonFile("jc@gmail.com")).thenReturn(Optional.of(str));
+    List<ConfigAttributeDTO> userConfigAtt = configService.getUserConfigAtt("jc@gmail.com");
+    assertNotNull(userConfigAtt);
+    AtomicBoolean attbute = new AtomicBoolean();
+    if (userConfigAtt != null && userConfigAtt.size() > 0) {
+      userConfigAtt.stream().forEach(cfg -> {
+        if (cfg.getConfigurationType() != null && cfg.getConfigurationType().getConfigType()
+            .equals(ConfigurationTypeEnum.LOCATION_CONFIRMATION.getConfigType())) {
+          cfg.getConfigurationAttributes().stream().forEach(attb -> {
+            if (attb.getConfigurationAttribute() != null
+                && attb.getConfigurationAttribute().equals("docking")) {
+              attbute.set(attb.getConfigurationEnabled().booleanValue());
             }
+          });
+        }
+      });
+      assertEquals(true, attbute.get());
     }
+  }
 
 }

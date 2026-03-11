@@ -42,7 +42,6 @@ import com.eai.user.event.NewUserEvent;
 import com.eai.user.exception.RestApiException;
 import com.eai.user.service.AccountService;
 import com.eai.user.service.JWTService;
-import com.eai.user.service.UserConfigurationService;
 import com.eai.user.utilities.UserUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,8 +64,8 @@ public class AccountController {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  @Autowired
-  private UserConfigurationService configurationService;
+  // @Autowired
+  // private UserConfigurationService configurationService;
 
   @Autowired
   private AuthenticationManager authenticationManager;
@@ -233,7 +232,8 @@ public class AccountController {
     return ResponseEntity.ok().body(
         HttpResponse.builder()
             .timeStamp(LocalDateTime.now().toString())
-            .data(Map.of("profile", user))
+            .data(Map.of("user", user,"access_token",jwtService.generateAccessToken(getUserPrincipal(user)),
+          "refresh_token",jwtService.generateRefreshToken(getUserPrincipal(user))))
             .message("Profile retrieved")
             .status(HttpStatus.OK)
             .statusCode(HttpStatus.OK.value())

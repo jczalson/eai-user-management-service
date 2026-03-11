@@ -46,8 +46,8 @@ public class AddressEntity implements Serializable {
 	
 	@Column(name = "ZIP_CD")
 	private Long zipCode;
-	
-	@OneToMany(mappedBy = "addressEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+
+	@OneToMany(mappedBy = "address",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private List<CustomerEntity> listCustomerEntity;
 	
 
