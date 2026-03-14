@@ -93,3 +93,9 @@ For open source projects, say how it is licensed.
 If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
 
 ## profile activation
+Use .env file to set the profile
+- local profile uses MySQL DB
+- dev profile uses H2 DB
+## Docker compose file and .env file
+Move the docker compose and .env files at the root of the project
+For example (Mode them inside PROJECT-WS) 
