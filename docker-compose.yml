@@ -1,0 +1,77 @@
+services:  
+  eai-eureka-service:
+    build: ./eai-eureka-server
+    container_name: eai-eureka-service
+    image: img-eureka-service
+    ports:
+      - 8761:8761
+    expose:
+      - 8761  
+    healthcheck:
+      test: ["CMD", "curl","-f","http://eai-eureka-service:8761/actuator/health"]
+      interval: 10s
+      retries: 4
+  eai-config-server:
+    build: ./eai-config-server
+    container_name: eai-config-server
+    image: img-config-server
+    ports:
+      - 8888:8888
+    expose:
+      - 8888
+    healthcheck:
+      test: ["CMD", "curl","-f","http://eai-config-server:8888/actuator/health"]
+      interval: 10s
+      retries: 3 
+    environment:
+      # eureka-service-url: http://eai-eureka-service:8761/eureka/
+      repository-url: https://gitlab.com/zalson/eai-config-files.git
+      token: glpat-0NTS8xTG3_vZekSEVUMKeG86MQp1OmZpd2cyCw.01.121xntmoy
+      branch-name: main
+      user: jczalson
+    # depends_on:
+    #   eai-eureka-service:
+    #     condition: service_healthy
+
+  eai-user-management-service:
+    container_name: eai-user-management-service
+    image: img-eai-user-management-service:v1
+    build:
+      context: ./eai-user-management-service
+      args:
+        CONTAINER_PORT: ${CONTAINER_PORT}
+    restart: unless-stopped
+    # env_file:
+    #   - .env-dev
+    ports:
+      - ${CONTAINER_PORT}:${HOST_PORT}
+    expose:
+      - ${CONTAINER_PORT}
+    environment:
+      ACTIVE_PROFILE: ${ACTIVE_PROFILE}
+      MY_DB_HOST: ${MY_DB_HOST}
+      MY_DB_PORT: ${MY_DB_PORT}
+      MY_DB_USER: ${MY_DB_USER}
+      MY_DB_PWD: ${MY_DB_PWD}
+      MY_DB_NAME: ${MY_DB_NAME}
+      # KAFKA_BOOTSTRAP_SERVERS: kafka-1:9092
+      eureka_service_url: http://eai-eureka-service:8761/eureka/
+      eai_config_server_details: http://eai-config-server:8888
+    depends_on:
+      eai-config-server:
+        condition: service_healthy
+      eai-eureka-service:
+        condition: service_healthy  
+      # mysql-docker-container:
+      #   condition: service_healthy  
+
+volumes:
+  mysql:
+networks:
+  mysql_network:       
+
+        
+      
+           
+
+      
