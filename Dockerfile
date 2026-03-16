@@ -1,6 +1,7 @@
 FROM maven:3.9.9 AS build
 WORKDIR /app
 ARG CONTAINER_PORT
+# ARG JWT_SECRET
 COPY pom.xml /app
 #run all the cmd we need to build the application
 RUN mvn dependency:resolve 
