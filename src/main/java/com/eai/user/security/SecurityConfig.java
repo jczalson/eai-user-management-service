@@ -72,7 +72,8 @@ public class SecurityConfig {
                    "/event/user/event/add/**","/h2/**",
                    "/event/user/event/**","/event/user/events/**",
                     "/swagger-ui.html", "/actuator/**",
-                    "/ws/**","/ws**","/ws/info/**","/ws/info**",
+                    "/ws/**",
+                    "/eai/api/user-management/ws/info/**",
                     "/url/**","/url-conf/**","/account/refresh/token/**"};
 
                     // private static final String [] PUBLIC_URLS = {"/**"};

@@ -7,7 +7,7 @@ public class MyThread extends Thread{
      for (int i = 0; i < 6; i++) {
         System.out.println("Thread " + Thread.currentThread().getName() +" is running "+"count:"+i);
         try {
-            Thread.sleep(500);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             System.out.println("Error");
         }

@@ -20,7 +20,7 @@ public interface AccountService {
 
     public AppRole addRole(AppRole AppRole);
 
-    public UserDTO addUser(MultipartFile file, UserDTOInput dtoInput) throws IOException;
+    public UserDTO addUser(UserDTOInput dtoInput) throws IOException;
 
     public List<AppRole> listOfAllRoles();
 

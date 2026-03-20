@@ -152,17 +152,8 @@ public class AccountServiceImplm implements AccountService {
     }
 
     @Override
-    public UserDTO addUser(MultipartFile file, UserDTOInput userInput) throws IOException {
+    public UserDTO addUser(UserDTOInput userInput) throws IOException {
         userInput.setPassword(passwordEncoder.encode(userInput.getPassword()));
-        Path folderPath = Paths.get(System.getProperty("user.home"), "zale-data", "pictures");
-        if (!Files.exists(folderPath)) {
-            Files.createDirectories(folderPath);
-        }
-        // String fileName = UUID.randomUUID().toString();
-        Path filePath = Paths.get(System.getProperty("user.home"), "zale-data", "pictures",
-                LocalDate.now() + "_" + System.currentTimeMillis() + "_" + userInput.getEmail().split("@")[0]);
-        Files.copy(file.getInputStream(), filePath);
-        userInput.setPhoto(filePath.toUri().toString());
         UserDTO dto = AccountUtilities
                 .fromUserEntityToDto(appUserRepository.save(AccountUtilities.fromUserDtoInputToEntity(userInput)));
         userActivityProducer.sendUserActivityMessage(dto);

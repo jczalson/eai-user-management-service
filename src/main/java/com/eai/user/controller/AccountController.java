@@ -93,9 +93,9 @@ public class AccountController {
             .build());
   }
 
-  @PostMapping(path = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(path = "/register")
   // @PreAuthorize("hasAuthority('ADMIN')")
-  public ResponseEntity<HttpResponse> saveUser(@RequestPart("file") MultipartFile file, String email, String name,
+  public ResponseEntity<HttpResponse> saveUser(String email, String name,
       String password,
       UserStatusEnum status, boolean isMfa) throws Exception {
     TimeUnit.SECONDS.sleep(3);
@@ -105,7 +105,7 @@ public class AccountController {
     userInput.setStatusEnum(status);
     userInput.setName(name);
     userInput.setMfa(isMfa);
-    UserDTO user = accountService.addUser(file, userInput);
+    UserDTO user = accountService.addUser(userInput);
     return ResponseEntity.ok().body(
         HttpResponse.builder()
             .timeStamp(LocalDateTime.now().toString())
