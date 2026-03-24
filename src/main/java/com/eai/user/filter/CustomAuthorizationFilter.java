@@ -33,70 +33,72 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
-    @Autowired
-    @Lazy
-    private JWTService jwtService;
+  @Autowired
+  @Lazy
+  private JWTService jwtService;
 
-    @Autowired
-    private AppUserRepository appUserRepository;
+  @Autowired
+  private AppUserRepository appUserRepository;
 
-    /**
-     * /account/refresh/token is whitelisted because 
-     * don't need to be filtererd as it doesn't have authorities
-     */
-    private static final String[] PUBLIC_URLS = { "/account/register","/account/file",
-            "/account/login", "/v3/api-docs/", "/account/verify/","/account/refresh/token",
-            "/swagger-ui/","/account/user/image","/event/event/add","/event/user/events/add",
-            "/event/user/event/","/event/user/events",
-            "/swagger-ui.html", "/actuator/", "/ws/", "/url/", "/url-conf/" };
+  /**
+   * /account/refresh/token is whitelisted because
+   * don't need to be filtererd as it doesn't have authorities
+   */
+  private static final String[] PUBLIC_URLS = { "/account/register", "/account/file",
+      "/account/login", "/v3/api-docs/", "/account/verify/", "/account/refresh/token",
+      "/swagger-ui/", "/account/user/image", "/event/event/add", "/event/user/events/add",
+      "/event/user/event/", "/event/user/events",
+      "/swagger-ui.html", "/actuator/", "/ws/", "/url/", "/url-conf/" };
 
-    protected static final String TOKEN_PREFIX = "Bearer ";
+  protected static final String TOKEN_PREFIX = "Bearer ";
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getHeader(AUTHORIZATION) == null
-                || !request.getHeader(AUTHORIZATION).startsWith(TOKEN_PREFIX)
-                || Arrays.asList(PUBLIC_URLS).contains(request.getServletPath())
-                || request.getMethod().equalsIgnoreCase("OPTIONS");
-    }
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    return request.getHeader(AUTHORIZATION) == null
+        || !request.getHeader(AUTHORIZATION).startsWith(TOKEN_PREFIX)
+        || Arrays.asList(PUBLIC_URLS).contains(request.getServletPath())
+        || request.getMethod().equalsIgnoreCase("OPTIONS");
+  }
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        try {
-            String token = getToken(request);
-            Long userId = jwtService.extractUserIdFromToken(getToken(request));
-            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDTO user = AccountUtilities.fromUserEntityToDto(appUserRepository.findById(userId).get());
-                if (jwtService.validateToken(token, user)) {
-                    String[] roles = jwtService.extractAuthoritiesFromToken(token).split(",");
-                    List<GrantedAuthority> authorities = stream(roles).map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList());
-                    Authentication authentication = jwtService.getAuthentication(user.getIdUser(), authorities,
-                            request);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    SecurityContextHolder.clearContext();
-                }
-            }
-            filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            log.error("Error in filter {}", e.getMessage());
-            try {
-                ExceptionUtils.processError(request, response, e);
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+    try {
+      String token = getToken(request);
+      if (!token.contains("null")) {
+        Long userId = jwtService.extractUserIdFromToken(token);
+        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+          UserDTO user = AccountUtilities.fromUserEntityToDto(appUserRepository.findById(userId).get());
+          if (jwtService.validateToken(token, user)) {
+            String[] roles = jwtService.extractAuthoritiesFromToken(token).split(",");
+            List<GrantedAuthority> authorities = stream(roles).map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+            Authentication authentication = jwtService.getAuthentication(user.getIdUser(), authorities,
+                request);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+          } else {
+            SecurityContextHolder.clearContext();
+          }
         }
+      }
+      filterChain.doFilter(request, response);
+    } catch (Exception e) {
+      log.error("Error in filter {}", e.getMessage());
+      try {
+        ExceptionUtils.processError(request, response, e);
+      } catch (Exception e1) {
+        e1.printStackTrace();
+      }
     }
+  }
 
-    private String getToken(HttpServletRequest request) {
-        String token = null;
-        String header = request.getHeader(AUTHORIZATION);
-        if (header != null && header.startsWith(TOKEN_PREFIX)) {
-            token = header.replace(TOKEN_PREFIX, EMPTY);
-        }
-        return token;
+  private String getToken(HttpServletRequest request) {
+    String token = null;
+    String header = request.getHeader(AUTHORIZATION);
+    if (header != null && header.startsWith(TOKEN_PREFIX)) {
+      token = header.replace(TOKEN_PREFIX, EMPTY);
     }
+    return token;
+  }
 
 }

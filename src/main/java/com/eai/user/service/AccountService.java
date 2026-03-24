@@ -36,7 +36,7 @@ public interface AccountService {
 
     public UserDTO getUserById(Long userId);
 
-    public UserDTO updateUser(UserDTO userDTO);
+    public UserDTO updateUser(UserDTO existingUser, UserDTOInput userDTOInput);
 
     public UserDTO updateUserImage(MultipartFile image, UserDTO userDTO);
 }

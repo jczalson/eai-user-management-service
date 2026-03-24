@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -78,20 +77,35 @@ public class AccountController {
     return accountService.addRole(appRole);
   }
 
-  @PatchMapping("/update")
-  public ResponseEntity<HttpResponse> updateUser(@RequestBody UserDTO userDTO) throws InterruptedException {
+  @PatchMapping("/update/{idUser}")
+  public ResponseEntity<HttpResponse> updateUser(@PathVariable("idUser")Long idUser,@RequestBody UserDTOInput inputUserDto) throws InterruptedException {
     TimeUnit.SECONDS.sleep(3);
-    publisher.publishEvent(new NewUserEvent(EventTypeEnum.PROFILE_UPDATE, userDTO.getEmail()));
-    UserDTO user = accountService.updateUser(userDTO);
+    UserDTO user = accountService.getUserById(idUser);
+    if (user != null && user.getIdUser() != null) {
+      UserDTO userUpdated = accountService.updateUser(user,inputUserDto);
     return ResponseEntity.ok().body(
         HttpResponse.builder()
             .timeStamp(LocalDateTime.now().toString())
-            .data(Map.of("user", user))
+            .data(Map.of("user", userUpdated))
             .message("User updated")
             .status(HttpStatus.OK)
             .statusCode(HttpStatus.OK.value())
             .build());
+  }else{
+     return ResponseEntity.ok().body(
+          HttpResponse.builder()
+              .timeStamp(LocalDateTime.now().toString())
+              // .data(Map.of("user", user))
+              .message("User doesn't exist, please retry")
+              .developerMessage("User doesn't exist, please retry")
+              .status(HttpStatus.NOT_FOUND)
+              .statusCode(HttpStatus.NOT_FOUND.value())
+              .build());
   }
+    }
+    // publisher.publishEvent(new NewUserEvent(EventTypeEnum.PROFILE_UPDATE,
+    // userPrincipal.getEmail()));
+   
 
   @PostMapping(path = "/register")
   // @PreAuthorize("hasAuthority('ADMIN')")
@@ -160,22 +174,22 @@ public class AccountController {
                     .substring(TOKEN_PREFIX.length()))));
   }
 
-  private UserDTO authenticate(LoginDTO login){
+  private UserDTO authenticate(LoginDTO login) {
     try {
-      if(null != accountService.loadUserByUsername(login.getEmail())){
+      if (null != accountService.loadUserByUsername(login.getEmail())) {
         publisher.publishEvent(new NewUserEvent(EventTypeEnum.LOGIN_ATTEMPT, login.getEmail()));
       }
       Authentication authentication = authenticationManager
           .authenticate(new UsernamePasswordAuthenticationToken(login.getEmail(),
               login.getPassword()));
       UserDTO loggedIndUser = UserUtils.getLoggedIndUser(authentication);
-      if(!loggedIndUser.getIsMfa().booleanValue()){
+      if (!loggedIndUser.getIsMfa().booleanValue()) {
         publisher.publishEvent(new NewUserEvent(EventTypeEnum.LOGIN_ATTEMPT_SUCCESS, login.getEmail()));
       }
       return loggedIndUser;
     } catch (Exception e) {
       publisher.publishEvent(new NewUserEvent(EventTypeEnum.LOGIN_ATTEMPT_FAILED, login.getEmail()));
-      throw new RestApiException("Fail to log in "+e.getMessage());
+      throw new RestApiException("Fail to log in " + e.getMessage());
     }
 
   }
@@ -196,7 +210,7 @@ public class AccountController {
     return ResponseEntity.ok().body(
         HttpResponse.builder()
             .timeStamp(LocalDateTime.now().toString())
-            .data(Map.of("user",userDto,"access_token",
+            .data(Map.of("user", userDto, "access_token",
                 this.jwtService.generateAccessToken(
                     getUserPrincipal(userDto)),
                 "refresh_token",
@@ -232,8 +246,8 @@ public class AccountController {
     return ResponseEntity.ok().body(
         HttpResponse.builder()
             .timeStamp(LocalDateTime.now().toString())
-            .data(Map.of("user", user,"access_token",jwtService.generateAccessToken(getUserPrincipal(user)),
-          "refresh_token",jwtService.generateRefreshToken(getUserPrincipal(user))))
+            .data(Map.of("user", user, "access_token", jwtService.generateAccessToken(getUserPrincipal(user)),
+                "refresh_token", jwtService.generateRefreshToken(getUserPrincipal(user))))
             .message("Profile retrieved")
             .status(HttpStatus.OK)
             .statusCode(HttpStatus.OK.value())

@@ -24,10 +24,8 @@ public class UserActivityConsumer {
     public void consumeUserActivity(UserDTO userDTO){
         log.info("User DTO consumed {}",userDTO);
 
-        if(userDTO.getEmail() != null){
-          // "50" must be the login user ID
-          // and must be is String type
-           messagingTemplate.convertAndSend(userActivityStompTopic+"50", userDTO);
+        if(userDTO != null && userDTO.getEmail() != null){
+           messagingTemplate.convertAndSend(userActivityStompTopic+String.valueOf(userDTO.getIdUser()), userDTO);
         log.info("End: Message processed by UserDTO stomp consumer: {}", userDTO);
         }
     }

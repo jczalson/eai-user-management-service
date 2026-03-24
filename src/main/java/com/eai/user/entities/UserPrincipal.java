@@ -23,7 +23,7 @@ public class UserPrincipal implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(
-                user.getRolesOfUser().stream().map(String::new).collect(Collectors.joining(","))));
+                user.getRoles().stream().map(String::new).collect(Collectors.joining(","))));
         return authorities;
     }
 

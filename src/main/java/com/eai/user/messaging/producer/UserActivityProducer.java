@@ -37,10 +37,10 @@ public class UserActivityProducer {
         = new ProducerRecord<String,UserDTO>(userActivityTopic,null,
                 userDTO.getName(),userDTO,null);
         try {
-            logger.info("UserDTO in JSON {}",convertToJson(userDTO));
             userActivityTemplate.send(producerRecord).get();
+            logger.info("Publish UserDTO in JSON {}",convertToJson(userDTO));
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("Error occurred when produce UserDTO", e);
+            logger.error("Error occurred when producing UserDTO", e);
         }
     }
 
