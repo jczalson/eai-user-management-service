@@ -34,9 +34,9 @@ public class UserDTO implements Serializable {
     
     // @JsonProperty( access = JsonProperty.Access.WRITE_ONLY)
     @JsonIgnore
-    private String password;
+    private String pwd;
 
-    private UserStatusEnum userStatusEnum;
+    private UserStatusEnum status;
 
     List<String> roles = new ArrayList<String>();
 

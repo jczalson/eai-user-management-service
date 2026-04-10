@@ -21,12 +21,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
-
 import com.eai.user.dto.UserDTO;
-import com.eai.user.entities.AppUser;
 import com.eai.user.entities.UserPrincipal;
-import com.eai.user.exception.RestApiException;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service

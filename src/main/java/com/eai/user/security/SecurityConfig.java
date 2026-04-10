@@ -74,7 +74,8 @@ public class SecurityConfig {
                     "/swagger-ui.html", "/actuator/**",
                     "/ws/**",
                     "/eai/api/user-management/ws/info/**",
-                    "/url/**","/url-conf/**","/account/refresh/token/**"};
+                    "/url/**","/url-conf/**","/account/refresh/token/**",
+                  "/configurations/**"};
 
                     // private static final String [] PUBLIC_URLS = {"/**"};
 

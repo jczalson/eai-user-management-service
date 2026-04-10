@@ -30,7 +30,7 @@ public class AppRole implements Serializable {
     private long idRole;
 
     @Column(name = "RL_NM")
-    private String roleName;
+    private String rlNm;
 
     @OneToMany(mappedBy = "appRole")
     private List<AppUserRole> userRoleList = new ArrayList<>();

@@ -23,7 +23,7 @@ public class UserEventUtilities {
     BeanUtils.copyProperties(entity, userEventDTO);
      BeanUtils.copyProperties(entity.getUser(), user);
     BeanUtils.copyProperties(entity.getEvent(), eventDTO);
-    userEventDTO.setCreateAt(entity.getCreateAt().toLocalDateTime());
+    userEventDTO.setCrtAt(entity.getCrtAt().toLocalDateTime());
     userEventDTO.setEvent(eventDTO);
     userEventDTO.setUser(user);
     return userEventDTO;
@@ -36,7 +36,7 @@ public class UserEventUtilities {
     BeanUtils.copyProperties(dto, entity);
     LocalDateTime ldt = LocalDateTime.now();
     ZonedDateTime zdt = ldt.atZone(ZoneId.systemDefault());
-    entity.setCreateAt(Timestamp.valueOf(zdt.toLocalDateTime()));
+    entity.setCrtAt(Timestamp.valueOf(zdt.toLocalDateTime()));
     BeanUtils.copyProperties(dto.getUser(), userEntity);
     BeanUtils.copyProperties(dto.getEvent(), eventEntity);
     entity.setEvent(eventEntity);

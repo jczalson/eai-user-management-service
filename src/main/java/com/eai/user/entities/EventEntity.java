@@ -32,7 +32,7 @@ public class EventEntity implements Serializable {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long idEvent;
+  private Long id;
 
   @Column(name = "type")
   @Enumerated(EnumType.STRING)

@@ -11,7 +11,7 @@ import com.eai.user.entities.AppUser;
 
 public interface AppUserRepository extends JpaRepository<AppUser,Long> {
 
-   @Query("select u from AppUser u where u.email =:email and u.userStatusEnum in (0,1)")
+   @Query("select u from AppUser u where u.email =:email and u.status in (0,1)")
    Optional<AppUser> findUserByEmailAndStatus(@Param("email")String email);
 
    @Modifying

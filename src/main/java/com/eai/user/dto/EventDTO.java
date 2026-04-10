@@ -12,7 +12,7 @@ public class EventDTO implements Serializable {
   
   private static final long serializableId = 1L;
 
-  private Long idEvent;
+  private Long id;
 
   private EventTypeEnum type;
 

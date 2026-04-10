@@ -14,8 +14,8 @@ public class AccountUtilities {
   public static UserDTO fromUserEntityToDto(AppUser user) {
     UserDTO dto = new UserDTO();
     dto.setIdUser(user.getIdUser());
-    dto.setPassword(user.getPassword());
-    dto.setUserStatusEnum(user.getUserStatusEnum());
+    dto.setPwd(user.getPwd());
+    dto.setStatus(user.getStatus());
     dto.setEmail(user.getEmail());
     dto.setName(user.getName());
     dto.setIsMfa(user.getIsMfa());
@@ -24,7 +24,7 @@ public class AccountUtilities {
     }
     if (user != null && !user.getUserRoleList().isEmpty()) {
       dto.getRoles().addAll(user.getUserRoleList().stream()
-          .map(role -> role.getAppRole().getRoleName())
+          .map(role -> role.getAppRole().getRlNm())
           .collect(Collectors.toList()));
     }
     return dto;
@@ -39,11 +39,11 @@ public class AccountUtilities {
     if (StringUtils.isNotBlank(userDto.getImageUrl())) {
       entity.setImageUrl(userDto.getImageUrl());
     }
-    if (StringUtils.isNotBlank(userDto.getPassword()))
-      entity.setPassword(userDto.getPassword());
+    if (StringUtils.isNotBlank(userDto.getPwd()))
+      entity.setPwd(userDto.getPwd());
 
-    if (userDto.getUserStatusEnum() != null)
-      entity.setUserStatusEnum(userDto.getUserStatusEnum());
+    if (userDto.getStatus() != null)
+      entity.setStatus(userDto.getStatus());
 
     if (StringUtils.isNotBlank(userDto.getEmail()))
       entity.setEmail(userDto.getEmail());
@@ -63,8 +63,8 @@ public class AccountUtilities {
 
   public static AppUser fromUserDtoInputToEntity(UserDTOInput inputUser) {
     AppUser entity = new AppUser();
-    entity.setPassword(inputUser.getPassword());
-    entity.setUserStatusEnum(inputUser.getStatusEnum());
+    entity.setPwd(inputUser.getPassword());
+    entity.setStatus(inputUser.getStatusEnum());
     entity.setEmail(inputUser.getEmail());
     if (StringUtils.isNotBlank(inputUser.getName()))
       entity.setName(inputUser.getName());

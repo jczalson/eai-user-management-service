@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,7 +28,7 @@ public class UserEventEntity implements Serializable{
   @Id
   @Column(name="id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long idUserEvent;
+  private Long id;
 
   @Column(name = "ip_address")
   private String ipAddress;
@@ -36,13 +37,13 @@ public class UserEventEntity implements Serializable{
   private String device;
 
   @Column(name = "crt_at")
-  private Timestamp createAt;
+  private Timestamp crtAt;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "USER_ID")
   private AppUser user;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EVENT_ID")
   private EventEntity event;
 

@@ -13,20 +13,32 @@ import com.eai.user.configuration.ApplicationConfig;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    @Autowired
-    private ApplicationConfig applicationConfig;
+  @Autowired
+  private ApplicationConfig applicationConfig;
 
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-       registry.addEndpoint("/ws")
-        .setAllowedOrigins(applicationConfig.getAllowedOrigins())
+  @Override
+  public void registerStompEndpoints(StompEndpointRegistry registry) {
+    /**
+     * Use this in production or development
+     * 
+     * registry.addEndpoint("/ws")
+     * .setAllowedOrigins(applicationConfig.getAllowedOrigins())
+     * .withSockJS();
+     * 
+     * registry.addEndpoint("/ws").setAllowedOriginPatterns(applicationConfig.getAllowedOrigins()).withSockJS();
+     */
+    /**
+     * When using docker for more permissive (for development only)
+     */
+    registry.addEndpoint("/ws")
+        .setAllowedOrigins("*")
         .withSockJS();
 
-        registry.addEndpoint("/ws").setAllowedOriginPatterns(applicationConfig.getAllowedOrigins()).withSockJS();
-    }
+    registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
+  }
 
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry config){
-      config.enableSimpleBroker("/topic/message");
-    }
+  @Override
+  public void configureMessageBroker(MessageBrokerRegistry config) {
+    config.enableSimpleBroker("/topic/message");
+  }
 }

@@ -6,7 +6,7 @@ import com.eai.user.entities.AppRole;
 
 public interface AppRoleRepository extends JpaRepository<AppRole,Long>{
 
-    Optional<AppRole> findByRoleName(String roleName);
+    Optional<AppRole> findByRlNm(String roleName);
 
     
 

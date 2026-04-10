@@ -40,7 +40,7 @@ public class CustomerServiceTest {
                 .thenReturn(optional);
         List<CustomerDTO> list = customerService.getCustomerByIdAddress(1);
         assertNotNull(list);
-        Assertions.assertEquals(list.get(0).getCustomerId(), createCustomerEntity().getCustomerId());
+        Assertions.assertEquals(list.get(0).getIdCustomer(), createCustomerEntity().getIdCustomer());
     }
 
     @Test
@@ -62,8 +62,8 @@ public class CustomerServiceTest {
     public void testDeleteCustomer() {
        Optional<CustomerEntity> optional = Optional.of(createCustomerEntity());
        when(customerRepository.findById(1L)).thenReturn(optional);
-       String deletedUserName = customerService.deleteCustomer(optional.get().getCustomerId());
-        Assertions.assertEquals(optional.get().getName(),deletedUserName);
+       String deletedUserName = customerService.deleteCustomer(optional.get().getIdCustomer());
+        Assertions.assertEquals(optional.get().getNm(),deletedUserName);
     }
 
     @Test
@@ -81,10 +81,10 @@ public class CustomerServiceTest {
     // }
     private CustomerEntity createCustomerEntity() {
         CustomerEntity cust = new CustomerEntity();
-        cust.setCustomerId(1L);
+        cust.setIdCustomer(1L);
         cust.setEmail("jc@gmail.com");
         cust.setCustomerType(CustomerType.ACTIVE);
-        cust.setName("jc");
+        cust.setNm("jc");
         AddressEntity address = new AddressEntity();
         address.setIdAddress(1L);
         address.setCity("FERRARA");
@@ -95,10 +95,10 @@ public class CustomerServiceTest {
 
      private CustomerEntity createCustomerEmailNull() {
         CustomerEntity cust = new CustomerEntity();
-        cust.setCustomerId(1L);
+        cust.setIdCustomer(1L);
         // cust.setEmail("jc@mail.com");
         cust.setCustomerType(CustomerType.ACTIVE);
-        cust.setName("jc");
+        cust.setNm("jc");
         AddressEntity address = new AddressEntity();
         address.setIdAddress(1L);
         cust.setAddress(address);

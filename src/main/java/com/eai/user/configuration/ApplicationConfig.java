@@ -14,14 +14,13 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "eai")
 public class ApplicationConfig {
 
-	private String [] allowedOrigins;
-	private UI ui;
-	
-	
-	  @Getter
-	  @Setter
-	public static class UI {
-		private String apiUrl;
-	}
+  private String[] allowedOrigins;
+  private UI ui;
+
+  @Getter
+  @Setter
+  public static class UI {
+    private String apiUrl;
+  }
 
 }

@@ -93,8 +93,8 @@ public class CustomerServiceImpl implements CustomerService {
   public String deleteCustomer(Long idCustomer) {
     CustomerDTO customer = getCustomerId(idCustomer);
     if (customer != null) {
-      customerRepository.deleteById(customer.getCustomerId());
-      return customer.getName();
+      customerRepository.deleteById(customer.getIdCustomer());
+      return customer.getNm();
     }
     return null;
   }

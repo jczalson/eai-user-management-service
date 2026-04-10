@@ -60,9 +60,9 @@ public class AccountServiceTest {
         user.setEmail("jc@mail.com");
         user.setName("jc");
         user.setIsMfa(Boolean.FALSE);
-        user.setUserStatusEnum(UserStatusEnum.CREATED);
+        user.setStatus(UserStatusEnum.CREATED);
         UserEventEntity userEventEntity = new UserEventEntity();
-        userEventEntity.setIdUserEvent(1L);
+        userEventEntity.setId(1L);
         user.setUserEvents(Arrays.asList(userEventEntity));
         
         user.setUserRoleList(new ArrayList<>());

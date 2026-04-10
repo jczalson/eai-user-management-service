@@ -70,7 +70,7 @@ public class AccountServiceImplm implements AccountService {
   public void addRoleToUser(String email, String roleName) {
     try {
       Optional<AppUser> appUser = appUserRepository.findUserByEmailAndStatus(email);
-      Optional<AppRole> role = appRoleRepository.findByRoleName(roleName);
+      Optional<AppRole> role = appRoleRepository.findByRlNm(roleName);
       if (appUser.isPresent() && role.isPresent()) {
         AppUserRole appUserRole = new AppUserRole();
         AppUserRoleKey key = new AppUserRoleKey();
@@ -166,7 +166,7 @@ public class AccountServiceImplm implements AccountService {
     Optional<AppUser> appUser = appUserRepository.findUserByEmailAndStatus(userName);
     if (appUser.isPresent()) {
       List<AppUserRole> userRoleList = appUser.get().getUserRoleList();
-      List<String> collect = userRoleList.stream().map(r -> r.getAppRole().getRoleName())
+      List<String> collect = userRoleList.stream().map(r -> r.getAppRole().getRlNm())
           .collect(Collectors.toList());
       mapRoles.put(appUser.get().getEmail(), collect);
     }

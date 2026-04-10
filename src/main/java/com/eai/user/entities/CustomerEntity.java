@@ -39,10 +39,10 @@ public class CustomerEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id_customer")
-     private Long customerId;
+     private Long idCustomer;
 	
 	@Column(name = "NM")
-	private String name;
+	private String nm;
 	
 	@NotEmpty(message = "Email cannot be empty")
     @Email(message ="Invalid email. please insert the correct email")
@@ -53,7 +53,7 @@ public class CustomerEntity implements Serializable {
 	private CustomerType customerType;
 	
 	@Column(name = "CREATE_DT")
-	private Timestamp createdDate;
+	private Timestamp createDt;
 	
 	@ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	@JoinColumn(name = "ID_ADDRESS")

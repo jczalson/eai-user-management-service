@@ -30,10 +30,10 @@ public class CustomerDTO implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private Long customerId;
+	private Long idCustomer;
 	
 	@NotEmpty(message = "Name cannot be empty")
-	private String name;
+	private String nm;
 	
 	@NotEmpty(message = "Email cannot be empty")
     @Email(message ="Invalid email. please insert the correct email")
@@ -42,7 +42,7 @@ public class CustomerDTO implements Serializable {
 	@JsonSerialize(using = LocalDateTimeSerializer.class)
 	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	@JsonFormat(pattern = Application.DATE_TIME_FORMAT)
-	private LocalDateTime createdDate;
+	private LocalDateTime createdDt;
 	
 	private CustomerType customerType;
 	

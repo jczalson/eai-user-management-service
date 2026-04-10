@@ -54,8 +54,8 @@ public class UserEventServiceImpl implements UserEventService {
 
   @Override
   public UserEventDTO getUserEventById(Long id) {
-    if (repo.findUserEventEntityByidUserEvent(id).isPresent()) {
-      return UserEventUtilities.fromEntityToDto(repo.findUserEventEntityByidUserEvent(id).get());
+    if (repo.findUserEventEntityById(id).isPresent()) {
+      return UserEventUtilities.fromEntityToDto(repo.findUserEventEntityById(id).get());
     }
     return null;
   }
@@ -63,6 +63,7 @@ public class UserEventServiceImpl implements UserEventService {
   @Override
   public Page<UserEventDTO> getUserEventsByUserId(Long id,int page, int size) {
     Page<UserEventEntity> userEvents = repo.findUserEventEntityByUserId(id,PageRequest.of(page, size));
+    // Page<UserEventDTO> userEvents = repo.findUserEventEntityByUserId(id,PageRequest.of(page, size));
     return userEvents.map(userEventMapper::toDto);
   }
 

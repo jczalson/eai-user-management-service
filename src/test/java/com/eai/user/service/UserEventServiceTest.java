@@ -111,12 +111,12 @@ public class UserEventServiceTest {
     List<UserEventEntity> userEvents = new ArrayList<>();
 
     UserEventEntity one = new UserEventEntity();
-    one.setIdUserEvent(1L);
+    one.setId(1L);
     one.setDevice("Chrome");
     one.setIpAddress("120.0.0.1");
-    one.setCreateAt(new Timestamp(System.currentTimeMillis()));
+    one.setCrtAt(new Timestamp(System.currentTimeMillis()));
     EventEntity event = new EventEntity();
-    event.setIdEvent(100L);
+    event.setId(100L);
     event.setType(EventTypeEnum.LOGIN_ATTEMPT);
     one.setEvent(event);
     AppUser user = new AppUser();
@@ -126,12 +126,12 @@ public class UserEventServiceTest {
     userEvents.add(one);
 
     UserEventEntity two = new UserEventEntity();
-    two.setIdUserEvent(2L);
+    two.setId(2L);
     two.setDevice("Desktop");
     two.setIpAddress("127.0.0.2");
-    two.setCreateAt(new Timestamp(System.currentTimeMillis()));
+    two.setCrtAt(new Timestamp(System.currentTimeMillis()));
     EventEntity even = new EventEntity();
-    even.setIdEvent(200L);
+    even.setId(200L);
     even.setType(EventTypeEnum.LOGIN_ATTEMPT);
     two.setEvent(event);
     AppUser us = new AppUser();
@@ -141,12 +141,12 @@ public class UserEventServiceTest {
     userEvents.add(two);
 
     UserEventEntity three = new UserEventEntity();
-    three.setIdUserEvent(3L);
+    three.setId(3L);
     three.setDevice("Desktop");
     three.setIpAddress("127.0.0.5");
-    three.setCreateAt(new Timestamp(System.currentTimeMillis()));
+    three.setCrtAt(new Timestamp(System.currentTimeMillis()));
     EventEntity ev = new EventEntity();
-    ev.setIdEvent(300L);
+    ev.setId(300L);
     ev.setType(EventTypeEnum.LOGIN_ATTEMPT_FAILED);
     three.setEvent(ev);
     AppUser u = new AppUser();

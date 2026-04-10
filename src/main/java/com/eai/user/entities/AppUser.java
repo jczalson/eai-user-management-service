@@ -40,14 +40,14 @@ public class AppUser implements Serializable {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "PWD")
-    private String password;
+    private String pwd;
     
     @Column(name="IMAGE")
     private String imageUrl;
 
     // @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private UserStatusEnum userStatusEnum;
+    private UserStatusEnum status;
     
     @Column(name = "is_mfa")
     private Boolean isMfa;
@@ -59,6 +59,6 @@ public class AppUser implements Serializable {
     @OneToMany(mappedBy = "appUser",fetch = FetchType.EAGER)
     private List<AppUserRole> userRoleList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private List<UserEventEntity> userEvents = new ArrayList<>();
 }

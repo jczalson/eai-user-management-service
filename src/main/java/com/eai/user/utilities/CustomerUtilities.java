@@ -15,11 +15,11 @@ public class CustomerUtilities {
 		
 		CustomerDTO customerDTO = new CustomerDTO();
 		
-		if(customerEntity.getCustomerId()!=null)
-			customerDTO.setCustomerId(customerEntity.getCustomerId());
+		if(customerEntity.getIdCustomer()!=null)
+			customerDTO.setIdCustomer(customerEntity.getIdCustomer());
 		
-		if(StringUtils.isNotBlank(customerEntity.getName()))
-			customerDTO.setName(customerEntity.getName());
+		if(StringUtils.isNotBlank(customerEntity.getNm()))
+			customerDTO.setNm(customerEntity.getNm());
 		
 		if(StringUtils.isNotBlank(customerEntity.getEmail()))
 			customerDTO.setEmail(customerEntity.getEmail());
@@ -27,8 +27,8 @@ public class CustomerUtilities {
 		if(StringUtils.isNotBlank(customerEntity.getCustomerType().name()))
 			customerDTO.setCustomerType(customerEntity.getCustomerType());
 		
-		if(customerEntity.getCreatedDate() !=null) {
-			customerDTO.setCreatedDate(customerEntity.getCreatedDate().toLocalDateTime());
+		if(customerEntity.getCreateDt() !=null) {
+			customerDTO.setCreatedDt(customerEntity.getCreateDt().toLocalDateTime());
 		}
 			
 		if(customerEntity.getAddress() !=null) {
@@ -45,11 +45,11 @@ public class CustomerUtilities {
 		
 		CustomerEntity entity = new CustomerEntity();
 
-		if(dto.getCustomerId() != null)
-		entity.setCustomerId(dto.getCustomerId());
+		if(dto.getIdCustomer() != null)
+		entity.setIdCustomer(dto.getIdCustomer());
 		
-		if(StringUtils.isNotBlank(dto.getName()))
-			entity.setName(dto.getName());
+		if(StringUtils.isNotBlank(dto.getNm()))
+			entity.setNm(dto.getNm());
 		
 		if(StringUtils.isNotBlank(dto.getEmail()))
 			entity.setEmail(dto.getEmail());
@@ -57,8 +57,8 @@ public class CustomerUtilities {
 		if(StringUtils.isNotBlank(dto.getCustomerType().name()))
 			entity.setCustomerType(dto.getCustomerType());
 		
-		if(dto.getCreatedDate() !=null) {
-			entity.setCreatedDate(Timestamp.valueOf(dto.getCreatedDate()));
+		if(dto.getCreatedDt() !=null) {
+			entity.setCreateDt(Timestamp.valueOf(dto.getCreatedDt()));
 		}
 			
 		if(dto.getAddress() !=null) {
