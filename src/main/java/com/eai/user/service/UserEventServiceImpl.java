@@ -49,6 +49,7 @@ public class UserEventServiceImpl implements UserEventService {
     userEventDTO.setIpAddress(eventInput.getIpAddress());
     userEventDTO.setUser(user);
     userEventDTO.setEvent(event);
+    userEventDTO.setCrtAt(eventInput.getCreateAt());
     return this.createUserEvent(userEventDTO);
   }
 

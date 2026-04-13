@@ -1,5 +1,7 @@
 package com.eai.user.listener;
 
+import java.time.Instant;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -36,6 +38,7 @@ public class NewUserEventListener {
     inputEvent.setType(event.getType());
     inputEvent.setDevice(RequestUtilies.getDevice(request));
     inputEvent.setIpAddress(RequestUtilies.getIpAddress(request));
+    inputEvent.setCreateAt(Instant.now());
     userEventService.addUserEventFromInputData(inputEvent);
   }
 }

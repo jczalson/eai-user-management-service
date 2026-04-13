@@ -2,10 +2,9 @@ package com.eai.user.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -30,9 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -114,7 +110,7 @@ public class UserEventServiceTest {
     one.setId(1L);
     one.setDevice("Chrome");
     one.setIpAddress("120.0.0.1");
-    one.setCrtAt(new Timestamp(System.currentTimeMillis()));
+    one.setCrtAt(Instant.now());
     EventEntity event = new EventEntity();
     event.setId(100L);
     event.setType(EventTypeEnum.LOGIN_ATTEMPT);
@@ -129,7 +125,7 @@ public class UserEventServiceTest {
     two.setId(2L);
     two.setDevice("Desktop");
     two.setIpAddress("127.0.0.2");
-    two.setCrtAt(new Timestamp(System.currentTimeMillis()));
+    two.setCrtAt(Instant.now());
     EventEntity even = new EventEntity();
     even.setId(200L);
     even.setType(EventTypeEnum.LOGIN_ATTEMPT);
@@ -144,7 +140,7 @@ public class UserEventServiceTest {
     three.setId(3L);
     three.setDevice("Desktop");
     three.setIpAddress("127.0.0.5");
-    three.setCrtAt(new Timestamp(System.currentTimeMillis()));
+    three.setCrtAt(Instant.now());
     EventEntity ev = new EventEntity();
     ev.setId(300L);
     ev.setType(EventTypeEnum.LOGIN_ATTEMPT_FAILED);

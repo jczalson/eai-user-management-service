@@ -1,6 +1,7 @@
 package com.eai.user.dto;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import lombok.Getter;
@@ -18,7 +19,7 @@ public class UserEventInput implements Serializable{
 
   private String device;  
 
-  private LocalDateTime createAt;
+  private Instant createAt;
 
   private String  email;
 
