@@ -31,8 +31,30 @@ public interface UserEventRepository extends JpaRepository<UserEventEntity,Long>
 //         where e.user.idUser = :idUser
 //     """
 // ) 
-@Query("select e from UserEventEntity e where e.user.idUser =:idUser order by e.crtAt desc")
-public Page<UserEventEntity> findUserEventEntityByUserId(@Param("idUser")Long idUser,Pageable page);
+/**
+ * select
+	ue.ID,
+	ue.device,
+	ue.ip_address,
+	ue.crt_at,
+	e.type ,
+	e.description
+from
+	user_event ue
+join event e on
+	e.id = ue.event_id
+join app_user au on
+	au.id_user = ue.user_id
+where
+	ue.user_id = 50
+order by
+	ue.crt_at desc ;
+ * @param idUser
+ * @param page
+ * @return
+ */
+@Query("select new com.eai.user.dto.UserEventDTO( ue.id,  ue.ipAddress, ue.device,  ue.crtAt,e.type, e.description) from UserEventEntity ue join EventEntity e on e.id=ue.event.id  where ue.user.idUser =:idUser order by ue.crtAt desc")
+public Page<UserEventDTO> findUserEventEntityByUserId(@Param("idUser")Long idUser,Pageable page);
 
  
   // @Query(value = "select ue.* from user_event ue"+ 

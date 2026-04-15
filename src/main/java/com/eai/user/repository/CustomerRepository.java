@@ -23,8 +23,9 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> 
    public Optional<CustomerEntity> findByEmail(String email);
 
   //  Page<CustomerEntity> findByNameContaining(String name, Pageable page);
-
+//WIth Page it's better to use Spring Data JPA DTO Projections
   @Query("select new com.eai.user.dto.CustomerDTO(c.idCustomer, c.nm, c.email," + 
-        " c.createdDt, c.customerType) from CustomerEntity c")
+        " c.createdDt, c.customerType,a.idAddress, a.streetName,a.city) from CustomerEntity c  "+
+      " join AddressEntity a on c.address.idAddress = a.idAddress")
    Page<CustomerDTO> findAllCustomers(Pageable page);
 }

@@ -64,9 +64,9 @@ public class UserEventServiceImpl implements UserEventService {
 
   @Override
   public PageDTO<UserEventDTO> getUserEventsByUserId(Long id,int page, int size) {
-    Page<UserEventEntity> userEvents = repo.findUserEventEntityByUserId(id,PageRequest.of(page, size));
+    Page<UserEventDTO> userEvents = repo.findUserEventEntityByUserId(id,PageRequest.of(page, size));
     if(userEvents !=null && !userEvents.isEmpty()) {
-     return new PageDTO<UserEventDTO>(userEvents.map(userEventMapper::toDto));
+     return new PageDTO<UserEventDTO>(userEvents);
     }
     return null;
   }

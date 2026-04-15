@@ -76,6 +76,7 @@ public class EventController {
   public ResponseEntity<HttpResponse> getUserEvent(@PathVariable("email") String email,@RequestParam Optional<Integer> page,@RequestParam Optional<Integer> size) throws Exception {
    UserDTO user = accountService.loadUserByUsername(email);
     PageDTO<UserEventDTO> eventPages =  userEventService.getUserEventsByUserId(user.getIdUser(), page.orElse(0), size.orElse(10));
+    if(eventPages != null){
     return ResponseEntity.ok().body(HttpResponse.builder()
         .data(Map.of("page", eventPages,"user",user))
         .message("User Events retrieved successfully")
@@ -83,6 +84,15 @@ public class EventController {
         .status(HttpStatus.OK)
         .statusCode(HttpStatus.OK.value())
         .build());
+    }else{
+      return ResponseEntity.ok().body(HttpResponse.builder()
+        .data(Map.of("user",user))
+        .message("No Events retrieved for that user")
+        .developerMessage("No Events retrieved for that user")
+        .status(HttpStatus.BAD_REQUEST)
+        .statusCode(HttpStatus.BAD_REQUEST.value())
+        .build());
+    }
   }
 
   @GetMapping("/user/event/{id}")

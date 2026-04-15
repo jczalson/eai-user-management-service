@@ -45,13 +45,24 @@ public class CustomerDTO implements Serializable {
   // @JsonBackReference  with this address is ignored
 	private AddressDTO address;
 
+  /**
+   * Begin DTO projections fields for address DTO
+   */
+  private Long idAddress;
+  private String street;
+  private String city;
+  /**End DTO projections */
+
   public CustomerDTO(Long idCustomer, String nm, String email,
-      Instant createdDt, CustomerType customerType) {
+      Instant createdDt, CustomerType customerType, Long idAddress,String street, String city) {
     this.idCustomer = idCustomer;
     this.nm = nm;
     this.email = email;
     this.createdDt = createdDt;
     this.customerType = customerType;
+    this.idAddress =  idAddress;
+    this.street = street;
+    this.city = city;
   }
 
   
