@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eai.user.dto.EventDTO;
+import com.eai.user.dto.PageDTO;
 import com.eai.user.dto.UserDTO;
 import com.eai.user.dto.UserEventDTO;
 import com.eai.user.dto.UserEventInput;
@@ -74,9 +75,9 @@ public class EventController {
    @GetMapping("/user/events/list/{email}")
   public ResponseEntity<HttpResponse> getUserEvent(@PathVariable("email") String email,@RequestParam Optional<Integer> page,@RequestParam Optional<Integer> size) throws Exception {
    UserDTO user = accountService.loadUserByUsername(email);
-    Page<UserEventDTO> userEvents =  userEventService.getUserEventsByUserId(user.getIdUser(), page.orElse(0), size.orElse(10));
+    PageDTO<UserEventDTO> eventPages =  userEventService.getUserEventsByUserId(user.getIdUser(), page.orElse(0), size.orElse(10));
     return ResponseEntity.ok().body(HttpResponse.builder()
-        .data(Map.of("page", userEvents,"user",user))
+        .data(Map.of("page", eventPages,"user",user))
         .message("User Events retrieved successfully")
         .developerMessage("User Events retrieved successfully")
         .status(HttpStatus.OK)

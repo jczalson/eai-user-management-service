@@ -3,10 +3,13 @@ package com.eai.user.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.eai.user.dto.CustomerDTO;
 import com.eai.user.entities.CustomerEntity;
 
 public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> {
@@ -21,5 +24,7 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> 
 
   //  Page<CustomerEntity> findByNameContaining(String name, Pageable page);
 
-  //  Page<CustomerEntity> findCustomersByPage(Pageable page);
+  @Query("select new com.eai.user.dto.CustomerDTO(c.idCustomer, c.nm, c.email," + 
+        " c.createdDt, c.customerType) from CustomerEntity c")
+   Page<CustomerDTO> findAllCustomers(Pageable page);
 }

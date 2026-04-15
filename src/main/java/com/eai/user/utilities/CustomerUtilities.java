@@ -1,7 +1,5 @@
 package com.eai.user.utilities;
 
-import java.sql.Timestamp;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.eai.user.dto.AddressDTO;
@@ -27,8 +25,8 @@ public class CustomerUtilities {
 		if(StringUtils.isNotBlank(customerEntity.getCustomerType().name()))
 			customerDTO.setCustomerType(customerEntity.getCustomerType());
 		
-		if(customerEntity.getCreateDt() !=null) {
-			customerDTO.setCreatedDt(customerEntity.getCreateDt().toLocalDateTime());
+		if(customerEntity.getCreatedDt() !=null) {
+			customerDTO.setCreatedDt(customerEntity.getCreatedDt());
 		}
 			
 		if(customerEntity.getAddress() !=null) {
@@ -58,7 +56,7 @@ public class CustomerUtilities {
 			entity.setCustomerType(dto.getCustomerType());
 		
 		if(dto.getCreatedDt() !=null) {
-			entity.setCreateDt(Timestamp.valueOf(dto.getCreatedDt()));
+			entity.setCreatedDt(dto.getCreatedDt());
 		}
 			
 		if(dto.getAddress() !=null) {

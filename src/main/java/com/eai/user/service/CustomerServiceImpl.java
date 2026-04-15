@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.eai.user.dto.AddressDTO;
 import com.eai.user.dto.CustomerDTO;
+import com.eai.user.dto.PageDTO;
 import com.eai.user.entities.CustomerEntity;
 import com.eai.user.mapper.CustomerMapper;
 import com.eai.user.repository.AddressRepository;
@@ -19,7 +20,6 @@ import com.eai.user.repository.CustomerRepository;
 import com.eai.user.utilities.CustomerUtilities;
 
 import lombok.RequiredArgsConstructor;
-
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class CustomerServiceImpl implements CustomerService {
   public List<CustomerDTO> getCustomerByIdAddress(long idAddress) {
     List<CustomerDTO> list = new ArrayList<CustomerDTO>();
     Optional<List<CustomerEntity>> customers = customerRepository.findCustomersByIdAddress(idAddress);
-    customers.get().parallelStream().forEach(customer -> {
+    customers.get().stream().forEach(customer -> {
       list.add(CustomerUtilities.fromCustomerEntityToDto(customer));
     });
     return list;
@@ -115,15 +115,18 @@ public class CustomerServiceImpl implements CustomerService {
 
   // @Override
   // public Page<CustomerDTO> serachCustomers(String name, int page, int size) {
-  //     // customerRepository.findByNameContaining(name, PageRequest.of(page, size));
-  //   // .map(customerMapper::toDto);
-  //   return null;
+  // // customerRepository.findByNameContaining(name, PageRequest.of(page, size));
+  // // .map(customerMapper::toDto);
+  // return null;
   // }
 
   @Override
-  public Page<CustomerDTO> getAllPageCustomers(int page, int size) {
-    Page<CustomerEntity> entities = customerRepository.findAll(PageRequest.of(page, size));
-    Page<CustomerDTO> dtos = entities.map(customerMapper::toDto);
-    return dtos;
+  public PageDTO<CustomerDTO> getAllPageCustomers(int page, int size) {
+    // Page<CustomerEntity> entities = customerRepository.findAll(PageRequest.of(page, size));
+    Page<CustomerDTO> dto = customerRepository.findAllCustomers(PageRequest.of(page, size));
+    if (dto != null && !dto.isEmpty()) {
+      return new PageDTO<>(dto);
+    }
+    return null;
   }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import com.eai.user.dto.CustomerDTO;
+import com.eai.user.dto.PageDTO;
 
 public interface CustomerService {
 
@@ -22,5 +23,5 @@ public interface CustomerService {
 
   // public Page<CustomerDTO> serachCustomers(String name,int page, int size);
 
-  public Page<CustomerDTO> getAllPageCustomers(int page, int size);
+  public PageDTO<CustomerDTO> getAllPageCustomers(int page, int size);
 }

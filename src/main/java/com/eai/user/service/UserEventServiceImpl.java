@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eai.user.dto.EventDTO;
+import com.eai.user.dto.PageDTO;
 import com.eai.user.dto.UserDTO;
 import com.eai.user.dto.UserEventDTO;
 import com.eai.user.dto.UserEventInput;
@@ -62,10 +63,12 @@ public class UserEventServiceImpl implements UserEventService {
   }
 
   @Override
-  public Page<UserEventDTO> getUserEventsByUserId(Long id,int page, int size) {
+  public PageDTO<UserEventDTO> getUserEventsByUserId(Long id,int page, int size) {
     Page<UserEventEntity> userEvents = repo.findUserEventEntityByUserId(id,PageRequest.of(page, size));
-    // Page<UserEventDTO> userEvents = repo.findUserEventEntityByUserId(id,PageRequest.of(page, size));
-    return userEvents.map(userEventMapper::toDto);
+    if(userEvents !=null && !userEvents.isEmpty()) {
+     return new PageDTO<UserEventDTO>(userEvents.map(userEventMapper::toDto));
+    }
+    return null;
   }
 
   @Override

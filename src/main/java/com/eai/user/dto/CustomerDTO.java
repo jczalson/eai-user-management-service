@@ -1,18 +1,13 @@
 package com.eai.user.dto;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
-import com.eai.user.Application;
 import com.eai.user.entities.CustomerType;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +18,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
+// @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class CustomerDTO implements Serializable {
@@ -39,13 +35,24 @@ public class CustomerDTO implements Serializable {
     @Email(message ="Invalid email. please insert the correct email")
 	private String email;
 	
-	@JsonSerialize(using = LocalDateTimeSerializer.class)
-	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
-	@JsonFormat(pattern = Application.DATE_TIME_FORMAT)
-	private LocalDateTime createdDt;
+	// @JsonSerialize(using = LocalDateTimeSerializer.class)
+	// @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	// @JsonFormat(pattern = Application.DATE_TIME_FORMAT)
+	private Instant createdDt;
 	
 	private CustomerType customerType;
 	
   // @JsonBackReference  with this address is ignored
 	private AddressDTO address;
+
+  public CustomerDTO(Long idCustomer, String nm, String email,
+      Instant createdDt, CustomerType customerType) {
+    this.idCustomer = idCustomer;
+    this.nm = nm;
+    this.email = email;
+    this.createdDt = createdDt;
+    this.customerType = customerType;
+  }
+
+  
 }

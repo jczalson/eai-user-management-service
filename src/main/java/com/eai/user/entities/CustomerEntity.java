@@ -2,6 +2,7 @@ package com.eai.user.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -53,7 +54,7 @@ public class CustomerEntity implements Serializable {
 	private CustomerType customerType;
 	
 	@Column(name = "CREATE_DT")
-	private Timestamp createDt;
+	private Instant createdDt;
 	
 	@ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	@JoinColumn(name = "ID_ADDRESS")
