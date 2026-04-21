@@ -66,7 +66,7 @@ public class AccountServiceTest {
         user.setUserEvents(Arrays.asList(userEventEntity));
         
         user.setUserRoleList(new ArrayList<>());
-        when(repository.findUserByEmailAndStatus("jc@mail.com")).thenReturn(Optional.of(user));
+        when(repository.findUserByEmail("jc@mail.com")).thenReturn(Optional.of(user));
         UserDTO dto = accountService.loadUserByUsername(user.getEmail());
         assertNotNull(dto);
         assertEquals(dto.getEmail(), user.getEmail());

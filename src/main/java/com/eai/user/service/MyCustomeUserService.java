@@ -24,7 +24,7 @@ public class MyCustomeUserService implements UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-     Optional<AppUser> userOp = appUserRepository.findUserByEmailAndStatus(username);
+     Optional<AppUser> userOp = appUserRepository.findUserByEmail(username);
      if(!userOp.isPresent()){
       throw new UsernameNotFoundException("User not found "+username);
      }

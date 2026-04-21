@@ -69,7 +69,7 @@ public class AccountServiceImplm implements AccountService {
   @Override
   public void addRoleToUser(String email, String roleName) {
     try {
-      Optional<AppUser> appUser = appUserRepository.findUserByEmailAndStatus(email);
+      Optional<AppUser> appUser = appUserRepository.findUserByEmail(email);
       Optional<AppRole> role = appRoleRepository.findByRlNm(roleName);
       if (appUser.isPresent() && role.isPresent()) {
         AppUserRole appUserRole = new AppUserRole();
@@ -92,7 +92,7 @@ public class AccountServiceImplm implements AccountService {
 
   @Override
   public UserDTO loadUserByUsername(String email) {
-    Optional<AppUser> user = appUserRepository.findUserByEmailAndStatus(email);
+    Optional<AppUser> user = appUserRepository.findUserByEmail(email);
     if (user.isPresent()) {
       return AccountUtilities.fromUserEntityToDto(user.get());
     }
@@ -163,7 +163,7 @@ public class AccountServiceImplm implements AccountService {
   @Override
   public Map<String, List<String>> findRolesByUserName(String userName) {
     Map<String, List<String>> mapRoles = new HashMap<>();
-    Optional<AppUser> appUser = appUserRepository.findUserByEmailAndStatus(userName);
+    Optional<AppUser> appUser = appUserRepository.findUserByEmail(userName);
     if (appUser.isPresent()) {
       List<AppUserRole> userRoleList = appUser.get().getUserRoleList();
       List<String> collect = userRoleList.stream().map(r -> r.getAppRole().getRlNm())

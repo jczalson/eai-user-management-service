@@ -12,7 +12,7 @@ import com.eai.user.entities.AppUser;
 public interface AppUserRepository extends JpaRepository<AppUser,Long> {
 
    @Query("select u from AppUser u where u.email =:email and u.status in (0,1)")
-   Optional<AppUser> findUserByEmailAndStatus(@Param("email")String email);
+   Optional<AppUser> findUserByEmail(@Param("email")String email);
 
    @Modifying
    @Query("update AppUser u set u.imageUrl =:imageUrl where u.idUser =:id")
