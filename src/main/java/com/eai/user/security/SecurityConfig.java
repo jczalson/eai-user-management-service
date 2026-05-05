@@ -1,6 +1,5 @@
 package com.eai.user.security;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -43,98 +42,93 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    
-    @Autowired
-    ApplicationConfig applicationConfig;
+  @Autowired
+  ApplicationConfig applicationConfig;
 
-    @Value("${jwt.secret-key}")
-    private String secretKey;
+  @Value("${jwt.secret-key}")
+  private String secretKey;
 
-    @Autowired
-    private  MyCustomeUserService myCustomeUserService;
-    
-    @Autowired
-    private CustomAccessDeniedHandler accessDeniedHandler;
+  @Autowired
+  private MyCustomeUserService myCustomeUserService;
 
-    @Autowired
-    private CustomAuthEntryPoint customAuthEntryPoint;
+  @Autowired
+  private CustomAccessDeniedHandler accessDeniedHandler;
 
-    @Autowired
-    private CustomAuthorizationFilter customAuthorizationFilter;
+  @Autowired
+  private CustomAuthEntryPoint customAuthEntryPoint;
 
-    /**
-     * /account/refresh/token/ is whitelisted because 
-     * don't need to be filtererd as it doesn't have authorities
-     */
-    private static final String [] PUBLIC_URLS = {"/account/register",
-                   "/account/login","/v3/api-docs/**",
-                   "/swagger-ui/**","/account/verify/code/**","/account/user/image/**","/event/event/add/**",
-                   "/event/user/event/add/**","/h2/**",
-                   "/event/user/event/**","/event/user/events/**",
-                    "/swagger-ui.html", "/actuator/**",
-                    "/ws/**",
-                    "/eai/api/user-management/ws/info/**",
-                    "/url/**","/url-conf/**","/account/refresh/token/**",
-                  "/configurations/**"};
+  @Autowired
+  private CustomAuthorizationFilter customAuthorizationFilter;
 
-                    // private static final String [] PUBLIC_URLS = {"/**"};
+  /**
+   * /account/refresh/token/ is whitelisted because
+   * don't need to be filtererd as it doesn't have authorities
+   */
+  private static final String[] PUBLIC_URLS = { "/account/register",
+      "/account/login", "/v3/api-docs/**",
+      "/swagger-ui/**", "/account/verify/code/**", "/account/user/image/**", "/event/event/add/**",
+      "/event/user/event/add/**", "/h2/**",
+      "/event/user/event/**", "/event/user/events/**",
+      "/swagger-ui.html", "/actuator/**",
+      "/ws/**",
+      "/eai/api/user-management/ws/info/**",
+      "/url/**", "/url-conf/**", "/account/refresh/token/**",
+      "/configurations/**" };
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(customizer -> customizer.disable())
-                .authorizeHttpRequests(request -> request
-                .requestMatchers(PUBLIC_URLS)
-                .permitAll())
-                .authorizeHttpRequests(request -> request.anyRequest().authenticated())
-                .headers(headers -> headers.frameOptions(op -> op.disable()))
-                .cors(cors -> cors.configurationSource(configurerCorsConfigurer()))
-                // .oauth2ResourceServer(oaut ->oaut.jwt(Customizer.withDefaults())) 
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exception -> 
-                   exception.accessDeniedHandler(accessDeniedHandler)
-                   .authenticationEntryPoint(customAuthEntryPoint))
-                   .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
-                 .build();
-    }
+  // private static final String [] PUBLIC_URLS = {"/**"};
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http.csrf(customizer -> customizer.disable())
+        .authorizeHttpRequests(request -> request
+            .requestMatchers(PUBLIC_URLS)
+            .permitAll())
+        .authorizeHttpRequests(request -> request.anyRequest().authenticated())
+        .headers(headers -> headers.frameOptions(op -> op.disable()))
+        .cors(cors -> cors.configurationSource(configurerCorsConfigurer()))
+        // .oauth2ResourceServer(oaut ->oaut.jwt(Customizer.withDefaults()))
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler)
+            .authenticationEntryPoint(customAuthEntryPoint))
+        .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+        .build();
+  }
 
-    @Bean
-    public JwtEncoder jwtAccessTokenEncoder() {
-        return new NimbusJwtEncoder(new ImmutableSecret<>(secretKey.getBytes()));
-    }
+  @Bean
+  public BCryptPasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public JwtDecoder jwtAccessTokenDecoder() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "RSA");
-        return NimbusJwtDecoder.withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS256).build();
-    }
+  @Bean
+  public JwtEncoder jwtAccessTokenEncoder() {
+    return new NimbusJwtEncoder(new ImmutableSecret<>(secretKey.getBytes()));
+  }
 
-   
-    @SuppressWarnings("deprecation")
-    @Bean
-    public AuthenticationManager authenticationManager() throws Exception {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        authenticationProvider.setUserDetailsService(myCustomeUserService);
-        return new ProviderManager(authenticationProvider);
-    }
+  @Bean
+  public JwtDecoder jwtAccessTokenDecoder() {
+    SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "RSA");
+    return NimbusJwtDecoder.withSecretKey(secretKeySpec)
+        .macAlgorithm(MacAlgorithm.HS256).build();
+  }
 
-    @Bean
-    public CorsConfigurationSource configurerCorsConfigurer() {
-        CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowCredentials(true);
-        corsConfig.setAllowedMethods(Arrays.asList("*"));
-        corsConfig.setAllowedOrigins(List.of(applicationConfig.getAllowedOrigins()));
-        //This part is added to solve CORS issue for Docker
-        corsConfig.addAllowedOriginPattern("*");
-        corsConfig.addAllowedHeader("*");
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
-        return source;
-    }
+  @SuppressWarnings("deprecation")
+  @Bean
+  public AuthenticationManager authenticationManager() throws Exception {
+    DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+    authenticationProvider.setPasswordEncoder(passwordEncoder());
+    authenticationProvider.setUserDetailsService(myCustomeUserService);
+    return new ProviderManager(authenticationProvider);
+  }
+
+  @Bean
+  public CorsConfigurationSource configurerCorsConfigurer() {
+    CorsConfiguration corsConfig = new CorsConfiguration();
+    corsConfig.setAllowCredentials(true);
+    corsConfig.setAllowedMethods(List.of("*")); // (*) not allow for production
+     corsConfig.setAllowedHeaders(List.of("*"));// (*) not allow for production
+    corsConfig.setAllowedOrigins(List.of(applicationConfig.getAllowedOrigins())); // (*) not allow for production
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", corsConfig);
+    return source;
+  }
 }
